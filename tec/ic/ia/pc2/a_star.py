@@ -1,6 +1,7 @@
 import queue
 import numpy as np
 
+
 # -----------------------------------------------------------------------------
 
 def calc_heuristico(pos, metas):
@@ -16,8 +17,9 @@ def calc_heuristico(pos, metas):
 # -----------------------------------------------------------------------------
 
 def get_submatriz(matriz, pos_actual, rango_vision):
-    n_cols = len(matriz[0])
-    n_filas = len(matriz)
+    matriz = np.matrix(matriz)
+    n_cols = matriz.shape[1]
+    n_filas = matriz.shape[0]
 
     x_min = max(0, pos_actual[0] - rango_vision)
     x_max = min(n_filas, pos_actual[0] + rango_vision + 1)
@@ -31,22 +33,29 @@ def get_submatriz(matriz, pos_actual, rango_vision):
 
 
 # -----------------------------------------------------------------------------
+
+def calc_pos_simbolo(matriz, simbolo):
+    indices = []
+    arreglo_indices = np.nonzero(matriz == simbolo)
+    if len(arreglo_indices) > 0:
+        eje_x = arreglo_indices[0]
+        eje_y = arreglo_indices[1]
+
+        for index in range(len(eje_x)):
+            indices.append([eje_x[index], eje_y[index]])
+
+    return indices
+
+# -----------------------------------------------------------------------------
+# ------------------ Pruebas --------------------------------------------------
+# -----------------------------------------------------------------------------
 test_matrix = [
-    ['Z', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', 'Z', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', 'Z', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', 'Z', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', 'Z', 'Z', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', 'Z', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-    ['', '', 'C', '', '', '', '', '', '', '', '', '', '', 'Z', '']
+    ['Z','','','N','','','Z'],
+    ['','Z','','N','','',''],
+    ['G','','Z','','','C',''],
+    ['','','Z','','','',''],
+    ['A','B','','Z','','',''],
+    ['Z','','','','','','Z']
 ]
 
 matriz2 = np.arange(50).reshape(5,10)
@@ -54,18 +63,19 @@ matriz2 = np.arange(50).reshape(5,10)
 
 test_matrix = np.matrix(test_matrix)
 
-valores = np.nonzero(test_matrix == 'Z')
-
-# print(valores[0])
-
-distancias = calc_heuristico([1, 2], [[0,3], [3,0], [3,1]])
-
 print('---------- Heuristicos ----------')
+distancias = calc_heuristico([1, 2], [[0,3], [3,0], [3,1]])
 for i in range(distancias.qsize()):
     x = distancias.get()
     print('valor: ', x[0], ' - Meta: ', x[1])
 
 print('\n---------- Sub Matriz ----------')
-print('Matriz original: \n',matriz2)
+posicion_actual = [4, 1]
+rango_vision = 1
+print('Matriz original: \n', test_matrix)
+print('\nSubMatriz: \n',
+      get_submatriz(test_matrix, posicion_actual, rango_vision))
 
-print('\nSubMatriz: \n', get_submatriz(matriz2, [2,7], 1))
+print('\n---------- Posicion de las Zanahorias en la matriz ----------')
+print('Matriz original: \n',test_matrix)
+print('Posiciones:\n', calc_pos_simbolo(test_matrix, 'N'))
