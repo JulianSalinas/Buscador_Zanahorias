@@ -1,0 +1,7 @@
+
+1. Para la mutación, primero se randomiza la celda de la mutación, luego se
+revisa el contenido de la misma para ver el tipo de mutación a aplicar.
+
+2. Si la celda escogida para mutar resulta ser un conejo o una zanahoria,
+entonces la mutación no ocurre.
+
