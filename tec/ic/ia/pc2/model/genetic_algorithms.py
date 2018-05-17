@@ -72,10 +72,10 @@ def mutate(gen, mutation_chance):
         cell_idx = randint(0, len(gen) - 1)
         cell_content = gen[cell_idx]
 
-        if cell_content is '':
+        if cell_content is ' ':
             gen[cell_idx] = arrow_symbols[randint(0, 3)]
         elif cell_content in arrow_symbols:
-            arrow_symbols += ['']
+            arrow_symbols += [' ']
             arrow_symbols.remove(cell_content)
             gen[cell_idx] = arrow_symbols[randint(0, 3)]
 
