@@ -18,11 +18,52 @@ test_matrix = [
  [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
  [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
  [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
+test_matrix2 = [
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '<', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', '>', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', 'A', '<', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
+test_matrix3 = [
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ ['V', 'Z', '<', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ ['>', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+ [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 
 test_gen = (np.matrix(test_matrix, dtype=object)).getA1()
+test_gen2 = (np.matrix(test_matrix2, dtype=object)).getA1()
+test_gen3 = (np.matrix(test_matrix3, dtype=object)).getA1()
 
 
-def initialization(initial_board, individuals):
+def _ws_():
+    # [0] = picked carrots weight
+    # [1] = steps weight
+    # [2] = arrows found weight
+    return [100, -1, -5]
+
+
+def _initialization_(initial_board, individuals):
     """
     Convierte a vector y genera la población inicial
     :param initial_board: matriz de numpy del estado inicial
@@ -33,7 +74,7 @@ def initialization(initial_board, individuals):
     return [initial_board.getA1()]*individuals, initial_board.shape
 
 
-def mutate(gen, mutation_chance):
+def _mutate_(gen, mutation_chance):
     """
     Dada una probabilidad de mutación, muta o no al gen recibido,
     la mutación puede ser la adición de una flecha, eliminación de flecha,
@@ -63,12 +104,13 @@ def mutate(gen, mutation_chance):
     return gen
 
 
-def eval_fitness(gen, direction, mat_shape):
+def _eval_fitness_(gen, direction, mat_shape):
 
     temp = (gen.copy()).reshape(mat_shape)
 
-    picked_carrots = 0
     carrot_count = len(np.where(gen == 'Z')[0])
+
+    picked_carrots = 0
     steps = 0
     arrow_count = 0
 
@@ -77,18 +119,22 @@ def eval_fitness(gen, direction, mat_shape):
     col = init_position[1][0]
 
     def move_up():
+        nonlocal row
         row -= 1
         return False if row < 0 else True
 
     def move_down():
+        nonlocal row
         row += 1
         return False if row == mat_shape[0] else True
 
     def move_left():
+        nonlocal col
         col -= 1
         return False if col < 0 else True
 
     def move_right():
+        nonlocal col
         col += 1
         return False if col == mat_shape[1] else True
 
@@ -131,15 +177,15 @@ def eval_fitness(gen, direction, mat_shape):
         else:
             break
 
-    print('carrots: ' + str(picked_carrots))
-    print('arrows found: ' + str(arrow_count))
-    print('steps: ' + str(steps))
+    return picked_carrots*_ws_()[0] + steps*_ws_()[1] + arrow_count*_ws_()[2]
 
 
-eval_fitness(test_gen, 'arriba', (15,15))
+print(_eval_fitness_(test_gen, 'arriba', (15, 15)))
+print(_eval_fitness_(test_gen2, 'arriba', (15, 15)))
+print(_eval_fitness_(test_gen3, 'arriba', (15, 15)))
 
 
-def cross(parent1, parent2, cross_type):
+def _cross_(parent1, parent2, cross_type):
     """
     Realiza el tipo de cruce entre dos genes padres
     :param parent1: array unidimensional
