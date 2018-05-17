@@ -61,25 +61,25 @@ def mutate(gen, mutation_chance):
     :param mutation_chance: probabilidad de mutación de 0 a 100
     :return: el gen luego de la mutación o sin mutar
     """
+    gen = gen.copy()
 
-    result = gen.tolist()
     arrow_symbols = ['<', '>', 'A', 'V']
 
     mutates = True if randint(0, 99) < mutation_chance else False
 
     if mutates:
 
-        cell_idx = randint(0, len(result) - 1)
-        cell_content = result[cell_idx]
+        cell_idx = randint(0, len(gen) - 1)
+        cell_content = gen[cell_idx]
 
         if cell_content is '':
-            result[cell_idx] = arrow_symbols[randint(0, 3)]
+            gen[cell_idx] = arrow_symbols[randint(0, 3)]
         elif cell_content in arrow_symbols:
             arrow_symbols += ['']
             arrow_symbols.remove(cell_content)
-            result[cell_idx] = arrow_symbols[randint(0, 3)]
+            gen[cell_idx] = arrow_symbols[randint(0, 3)]
 
-    return np.array(result)
+    return gen
 
 
 def eval_solution():
@@ -97,11 +97,12 @@ def cross(parent1, parent2, cross_type):
     child1 = np.array(parent1.tolist())
     child2 = np.array(parent2.tolist())
 
-    idx1 = randint(0, len(child1) - 1)
+    idx1 = randint(1, len(child1) - 1)
     if cross_type == 1:
-        child1[:idx1], child2[:idx1] = child2[:idx1].tolist(), child1[:idx1].tolist()
+        child1[:idx1], child2[:idx1] = child2[:idx1].tolist(), child1[
+                                                               :idx1].tolist()
     else:
-        idx2 = randint(0, len(child1) - 1)
+        idx2 = randint(1, len(child1) - 1)
         idx1, idx2 = min(idx1, idx2), max(idx1, idx2)
         child1[idx1:idx2], child2[idx1:idx2] = \
             child2[idx1:idx2].tolist(), child1[idx1:idx2].tolist()
