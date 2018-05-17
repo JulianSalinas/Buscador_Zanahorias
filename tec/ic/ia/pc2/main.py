@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------------
 
 import argparse
+from tec.ic.ia.pc2.file_utils import *
 
 # -----------------------------------------------------------------------------
 
@@ -30,8 +31,18 @@ def get_arguments():
 
 
 if __name__ == '__main__':
+
     print("ARGS: ")
-    print(get_arguments())
+    args = get_arguments()
+
+    if args.tablero_inicial is None:
+        filename = get_default_filename()
+    else:
+        filename = args.tablero_inicial[0]
+
+    matrix = read_file(filename)
+
+    print(matrix)
 
 # -----------------------------------------------------------------------------
 
