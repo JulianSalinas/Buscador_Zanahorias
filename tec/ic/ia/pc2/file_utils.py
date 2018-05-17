@@ -14,6 +14,21 @@ def get_default_folder():
 # -----------------------------------------------------------------------------
 
 
+def get_default_filename():
+    folder = get_default_folder()
+    return os.path.join(folder, "testing_file.txt")
+
+# -----------------------------------------------------------------------------
+
+
+def get_step_filename(step):
+    digits = len(str(step))
+    missing_digits = 5 - digits
+    return "0" * missing_digits + str(step)
+
+
+# -----------------------------------------------------------------------------
+
 def save_file(filename, data):
     filename = fix_filename(filename)
     data = pd.DataFrame(data)
@@ -62,9 +77,13 @@ test_matrix = [
 
 
 if __name__ == '__main__':
-    test_filename = "testing_file.txt"
+
+    test_filename = get_default_filename()
     save_file(test_filename, test_matrix)
     test_matrix = read_file(test_filename)
     print(test_matrix)
+
+    for i in range(0, 1000):
+        print(get_step_filename(i))
 
 # -----------------------------------------------------------------------------
