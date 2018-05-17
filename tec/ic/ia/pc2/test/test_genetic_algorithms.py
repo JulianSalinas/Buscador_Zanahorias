@@ -35,15 +35,16 @@ def test_crossing():
 
 def test_mutation():
 
-    seed(1)
-
     gen = np.array(['', '', 'C', '', '', '', 'Z', 'Z', ''])
 
-    mutation1 = mutate(gen, 20)  # rgn = 17
-    print(mutation1)
+    seed(1)
+    mutation1 = mutate(gen, 20)  # Inserción de una flecha
+    assert mutation1.tolist() == ['', 'A', 'C', '', '', '', 'Z', 'Z', '']
 
-    mutation2 = mutate(gen, 20)  # rgn = 32
-    print(mutation2)
+    seed(2)
+    mutation2 = mutate(gen, 20)  # Inserción de una flecha
+    assert mutation2.tolist() == ['', '<', 'C', '', '', '', 'Z', 'Z', '']
 
-    mutation3 = mutate(gen, 20)  # rgn = 15
-    print(mutation3)
+    seed(2)
+    mutation3 = mutate(mutation2, 20)  # Cambio de dirección de la flecha
+    assert mutation3.tolist() == ['', '>', 'C', '', '', '', 'Z', 'Z', '']

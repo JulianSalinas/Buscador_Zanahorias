@@ -62,23 +62,24 @@ def mutate(gen, mutation_chance):
     :return: el gen luego de la mutación o sin mutar
     """
 
+    result = gen.tolist()
     arrow_symbols = ['<', '>', 'A', 'V']
-    rgn = randint(0, 99)
-    print(rgn)
-    mutates = True if rgn < mutation_chance else False
+
+    mutates = True if randint(0, 99) < mutation_chance else False
 
     if mutates:
-        cell_idx = randint(0, len(gen) - 1)
-        print(cell_idx)
-        cell_content = gen[cell_idx]
+
+        cell_idx = randint(0, len(result) - 1)
+        cell_content = result[cell_idx]
+
         if cell_content is '':
-            gen[cell_idx] = arrow_symbols[randint(0, 3)]
+            result[cell_idx] = arrow_symbols[randint(0, 3)]
         elif cell_content in arrow_symbols:
             arrow_symbols += ['']
             arrow_symbols.remove(cell_content)
-            gen[cell_idx] = arrow_symbols[randint(0, 3)]
+            result[cell_idx] = arrow_symbols[randint(0, 3)]
 
-    return gen
+    return np.array(result)
 
 
 def eval_solution():
