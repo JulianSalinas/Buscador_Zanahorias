@@ -2,68 +2,16 @@
 import numpy as np
 from random import randint
 
-test_matrix = [
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '<', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', '>', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', 'A', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
-test_matrix2 = [
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '<', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', '>', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', 'A', '<', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
-test_matrix3 = [
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- ['V', 'Z', '<', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- ['>', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
- [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 
-test_gen = (np.matrix(test_matrix, dtype=object)).getA1()
-test_gen2 = (np.matrix(test_matrix2, dtype=object)).getA1()
-test_gen3 = (np.matrix(test_matrix3, dtype=object)).getA1()
-
-
-def _ws_():
+def _weights_():
     # [0] = picked carrots weight
     # [1] = steps weight
     # [2] = arrows found weight
-    return [100, -1, -5]
+    # [3] = arrows not used weight
+    return [100, -1, -5, -10]
 
 
-def _initialization_(initial_board, individuals):
+def initialization(initial_board, individuals):
     """
     Convierte a vector y genera la población inicial
     :param initial_board: matriz de numpy del estado inicial
@@ -74,7 +22,7 @@ def _initialization_(initial_board, individuals):
     return [initial_board.getA1()]*individuals, initial_board.shape
 
 
-def _mutate_(gen, mutation_chance):
+def mutate(gen, mutation_chance):
     """
     Dada una probabilidad de mutación, muta o no al gen recibido,
     la mutación puede ser la adición de una flecha, eliminación de flecha,
@@ -104,15 +52,16 @@ def _mutate_(gen, mutation_chance):
     return gen
 
 
-def _eval_fitness_(gen, direction, mat_shape):
+def eval_fitness(gen, direction, mat_shape):
 
     temp = (gen.copy()).reshape(mat_shape)
 
-    carrot_count = len(np.where(gen == 'Z')[0])
+    carrot_count = np.count_nonzero(temp == 'Z')
+    arrow_count = np.count_nonzero(temp != ' ') - carrot_count - 1
 
     picked_carrots = 0
     steps = 0
-    arrow_count = 0
+    arrows_found = 0
 
     init_position = np.where(temp == 'C')
     row = init_position[0][0]
@@ -159,33 +108,33 @@ def _eval_fitness_(gen, direction, mat_shape):
                 picked_carrots += 1
                 temp[row][col] = ' '
             elif cell_content is 'V':
-                arrow_count += 1
+                arrows_found += 1
                 direction = 'abajo'
                 temp[row][col] = ' '
             elif cell_content is 'A':
-                arrow_count += 1
+                arrows_found += 1
                 direction = 'arriba'
                 temp[row][col] = ' '
             elif cell_content is '<':
-                arrow_count += 1
+                arrows_found += 1
                 direction = 'izquierda'
                 temp[row][col] = ' '
             elif cell_content is '>':
-                arrow_count += 1
+                arrows_found += 1
                 direction = 'derecha'
                 temp[row][col] = ' '
         else:
             break
 
-    return picked_carrots*_ws_()[0] + steps*_ws_()[1] + arrow_count*_ws_()[2]
+    cw = picked_carrots * _weights_()[0]                 # zanahorias cogidas
+    sw = steps * _weights_()[1]                          # pasos dados
+    aw = arrows_found * _weights_()[2]                   # flechas usadas
+    auw = (arrow_count - arrows_found) * _weights_()[3]  # flechas sin usar
+
+    return cw + sw + aw + auw
 
 
-print(_eval_fitness_(test_gen, 'arriba', (15, 15)))
-print(_eval_fitness_(test_gen2, 'arriba', (15, 15)))
-print(_eval_fitness_(test_gen3, 'arriba', (15, 15)))
-
-
-def _cross_(parent1, parent2, cross_type):
+def cross(parent1, parent2, cross_type):
     """
     Realiza el tipo de cruce entre dos genes padres
     :param parent1: array unidimensional
