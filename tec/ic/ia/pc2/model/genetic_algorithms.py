@@ -41,12 +41,12 @@ def initialization(initial_board, individuals, direction, fitness=True):
     first_generation = list()
     content = initial_board.getA1().tolist()
     if fitness:
-        score = eval_fitness(Gen(np.array(content)), direction,
+        score = eval_fitness(Gen(np.array(content, object)), direction,
                              initial_board.shape)
     else: score = None
 
     for _ in range(0, individuals):
-        first_generation.append(Gen(np.array(content), score))
+        first_generation.append(Gen(np.array(content, object), score))
 
     return first_generation, initial_board.shape
 
@@ -63,7 +63,6 @@ def mutate(gen, mutation_chance):
     :return: el gen luego de la mutación o sin mutar
     """
     temp = gen.get_array().copy()
-
     arrow_symbols = ['<', '>', 'A', 'V']
 
     mutates = True if randint(0, 99) < mutation_chance else False
@@ -202,11 +201,14 @@ def cross(parent1, parent2, cross_type):
     return child1, child2
 
 
-def generate(parents, selection_type, mutation_chance=20, cross_type=1):
+def generate(parents, selection_type, direction, mat_shape,
+             mutation_chance, cross_type):
     """
     Realiza el cruce de los genes según dos tipos de selección diferente
-    :param parents: lista de genes para cruzar
-    :param selection_type: 1 o 2 según el tipo de selección
+    :param parents: lista de Genes para cruzar
+    :param selection_type: 1 -> random, 2 -> parejas en orden
+    :param direction: dirección inicial del conejo para evaluar fitness
+    :param mat_shape: dimensiones de la matriz para evaluar fitness
     :param mutation_chance: probabilidad de 0 a 100 de mutación
     :param cross_type: 1 -> corte en un punto, 2 -> corte en dos puntos
     :return: una lista con todos los Genes (hijos, mutos, padres) resultantes
@@ -221,7 +223,29 @@ def generate(parents, selection_type, mutation_chance=20, cross_type=1):
             child1, child2 = cross(parents[gen1_idx],
                                    parents[gen2_idx],
                                    cross_type)
+
+            eval_fitness(child1, direction, mat_shape)
+            eval_fitness(child2, direction, mat_shape)
+
             mutation1, mutated = mutate(child1, mutation_chance)
+            if mutated:
+                eval_fitness(mutation1, direction, mat_shape)
+                resulting_generation.append(mutation1)
+
+            mutation2, mutated = mutate(child2, mutation_chance)
+            if mutated:
+                eval_fitness(mutation2, direction, mat_shape)
+                resulting_generation.append(mutation2)
+
+            resulting_generation.append(child1)
+            resulting_generation.append(child2)
+
+            resulting_generation += parents
+
+    elif selection_type == 2:
+        pass
+
+    return resulting_generation
 
 
 def run_carrot_finder(initial_direction, individuals, generations,
