@@ -11,7 +11,7 @@ def test_initialization():
 
     matrix = np.matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
-    generation, matrix_shape = initialization(matrix, 3)
+    generation, matrix_shape = initialization(matrix, 3, 'arriba', False)
 
     assert len(generation) == 3
     assert generation[0].get_array()[1] == 2
@@ -30,41 +30,53 @@ def test_crossing():
     definidos
     :return: None
     """
-    parent1 = np.array(['A', 'B', 'C', 'D', 'E', 'F', '7', '8', '9'])
-    parent2 = np.array(['1', '2', '3', '4', '5', '6', 'G', 'H', 'I'])
+    parent1 = Gen(np.array(['A', 'B', 'C', 'D', 'E', 'F', '7', '8', '9']))
+    parent2 = Gen(np.array(['1', '2', '3', '4', '5', '6', 'G', 'H', 'I']))
 
     seed(7)
 
     child1, child2 = cross(parent1, parent2, 1)
 
-    assert child1.tolist() == ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-    assert child2.tolist() == ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+    assert child1.get_array().tolist() == ['1', '2', '3',
+                                           '4', '5', '6',
+                                           '7', '8', '9']
+    assert child2.get_array().tolist() == ['A', 'B', 'C',
+                                           'D', 'E', 'F',
+                                           'G', 'H', 'I']
 
     seed(1)
 
     child1, child2 = cross(child1, child2, 2)
 
-    assert child1.tolist() == ['1', '2', 'C', '4', '5', '6', '7', '8', '9']
-    assert child2.tolist() == ['A', 'B', '3', 'D', 'E', 'F', 'G', 'H', 'I']
+    assert child1.get_array().tolist() == ['1', '2', 'C',
+                                           '4', '5', '6',
+                                           '7', '8', '9']
+    assert child2.get_array().tolist() == ['A', 'B', '3',
+                                           'D', 'E', 'F',
+                                           'G', 'H', 'I']
 
     seed(time())
 
 
 def test_mutation():
 
-    gen = np.array([' ', ' ', 'C', ' ', ' ', ' ', 'Z', 'Z', ' '], dtype=object)
+    gen = Gen(np.array([' ', ' ', 'C', ' ', ' ', ' ', 'Z', 'Z', ' '],
+                       dtype=object))
 
     seed(1)
     mutation1, _ = mutate(gen, 20)  # Inserción de una flecha
-    assert mutation1.tolist() == [' ', 'A', 'C', ' ', ' ', ' ', 'Z', 'Z', ' ']
+    assert mutation1.get_array().tolist() == [' ', 'A', 'C', ' ', ' ',
+                                              ' ', 'Z', 'Z', ' ']
 
     seed(2)
     mutation2, _ = mutate(gen, 20)  # Inserción de una flecha
-    assert mutation2.tolist() == [' ', '<', 'C', ' ', ' ', ' ', 'Z', 'Z', ' ']
+    assert mutation2.get_array().tolist() == [' ', '<', 'C', ' ', ' ',
+                                              ' ', 'Z', 'Z', ' ']
 
     seed(2)
     mutation3, _ = mutate(mutation2, 20)  # Cambio de dirección de la flecha
-    assert mutation3.tolist() == [' ', '>', 'C', ' ', ' ', ' ', 'Z', 'Z', ' ']
+    assert mutation3.get_array().tolist() == [' ', '>', 'C', ' ', ' ',
+                                              ' ', 'Z', 'Z', ' ']
 
     seed(time())
 
@@ -90,8 +102,9 @@ def test_fitness():
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
         [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
-    test_gen = (np.matrix(test_matrix, dtype=object)).getA1()
-    assert eval_fitness(test_gen, 'arriba', (15, 14)) == 150
+    test_gen = Gen((np.matrix(test_matrix, dtype=object)).getA1())
+    eval_fitness(test_gen, 'arriba', (15, 14))
+    assert test_gen.get_score() == 150
 
     test_matrix = [
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -109,8 +122,9 @@ def test_fitness():
         [' ', 'A', '<', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
         [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
-    test_gen = (np.matrix(test_matrix, dtype=object)).getA1()
-    assert eval_fitness(test_gen, 'arriba', (15, 14)) == 140
+    test_gen = Gen((np.matrix(test_matrix, dtype=object)).getA1())
+    eval_fitness(test_gen, 'arriba', (15, 14))
+    assert test_gen.get_score() == 140
 
     test_matrix = [
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -128,8 +142,9 @@ def test_fitness():
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
         [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
-    test_gen = (np.matrix(test_matrix, dtype=object)).getA1()
-    assert eval_fitness(test_gen, 'arriba', (15, 14)) == 157
+    test_gen = Gen((np.matrix(test_matrix, dtype=object)).getA1())
+    eval_fitness(test_gen, 'arriba', (15, 14))
+    assert test_gen.get_score() == 157
 
     test_matrix = [
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -147,5 +162,6 @@ def test_fitness():
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' '],
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A', ' ', ' ', ' '],
         [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
-    test_gen = (np.matrix(test_matrix, dtype=object)).getA1()
-    assert eval_fitness(test_gen, 'arriba', (15, 14)) == 117
+    test_gen = Gen((np.matrix(test_matrix, dtype=object)).getA1())
+    eval_fitness(test_gen, 'arriba', (15, 14))
+    assert test_gen.get_score() == 117

@@ -28,19 +28,25 @@ def _weights_():
     return [100, -1, -5, -10]
 
 
-def initialization(initial_board, individuals):
+def initialization(initial_board, individuals, direction, fitness=True):
     """
     Convierte a Gen y genera la población inicial
     :param initial_board: matriz de numpy del estado inicial
     :param individuals: cantidad de individuos por generacion
-    :return: lista con los genes de la generación inicial, shape de initial
+    :param direction: dirección inicial del conejo
+    :param fitness: define si se calcula el fitness para la 1ra generación o no
+    :return: lista con los Genes de la generación inicial, shape de initial
     board
     """
     first_generation = list()
     content = initial_board.getA1().tolist()
+    if fitness:
+        score = eval_fitness(Gen(np.array(content)), direction,
+                             initial_board.shape)
+    else: score = None
 
     for _ in range(0, individuals):
-        first_generation.append(Gen(np.array(content)))
+        first_generation.append(Gen(np.array(content), score))
 
     return first_generation, initial_board.shape
 
@@ -50,11 +56,13 @@ def mutate(gen, mutation_chance):
     Dada una probabilidad de mutación, muta o no al gen recibido,
     la mutación puede ser la adición de una flecha, eliminación de flecha,
     o el cambio de dirección de una flecha
-    :param gen: flatten array de numpy
+    :param gen: objeto Gen
     :param mutation_chance: probabilidad de mutación de 0 a 100
+    :param direction: direccion inicial del conejo para evaluar fitness
+    :param mat_shape: dimensiones de la matriz para evaluar fitness
     :return: el gen luego de la mutación o sin mutar
     """
-    gen = gen.copy()
+    temp = gen.get_array().copy()
 
     arrow_symbols = ['<', '>', 'A', 'V']
 
@@ -62,22 +70,28 @@ def mutate(gen, mutation_chance):
 
     if mutates:
 
-        cell_idx = randint(0, len(gen) - 1)
-        cell_content = gen[cell_idx]
+        cell_idx = randint(0, len(temp) - 1)
+        cell_content = temp[cell_idx]
 
         if cell_content is ' ':
-            gen[cell_idx] = arrow_symbols[randint(0, 3)]
+            temp[cell_idx] = arrow_symbols[randint(0, 3)]
         elif cell_content in arrow_symbols:
             arrow_symbols += [' ']
             arrow_symbols.remove(cell_content)
-            gen[cell_idx] = arrow_symbols[randint(0, 3)]
+            temp[cell_idx] = arrow_symbols[randint(0, 3)]
 
-    return gen, mutates
+    return Gen(temp), mutates
 
 
 def eval_fitness(gen, direction, mat_shape):
-
-    temp = (gen.copy()).reshape(mat_shape)
+    """
+    calcula la aptitud para un gen
+    :param gen: objeto tipo Gen
+    :param direction: dirección inicial del conejo
+    :param mat_shape: dimensiones de la matriz
+    :return: Gen con el atributo score alterado
+    """
+    temp = (gen.get_array().copy()).reshape(mat_shape)
 
     carrot_count = np.count_nonzero(temp == 'Z')
     arrow_count = np.count_nonzero(temp != ' ') - carrot_count - 1
@@ -154,19 +168,23 @@ def eval_fitness(gen, direction, mat_shape):
     aw = arrows_found * _weights_()[2]                   # flechas usadas
     auw = (arrow_count - arrows_found) * _weights_()[3]  # flechas sin usar
 
-    return cw + sw + aw + auw
+    score = cw + sw + aw + auw
+
+    gen.set_score(score)
+
+    return score
 
 
 def cross(parent1, parent2, cross_type):
     """
     Realiza el tipo de cruce entre dos genes padres
-    :param parent1: array unidimensional
-    :param parent2: array unidimensional
+    :param parent1: objeto Gen
+    :param parent2: objeto Gen
     :param cross_type: 1 -> cruce en 1 punto, 2 -> cruce en dos puntos
     :return: los dos np array genes hijos resultantes
     """
-    child1 = np.array(parent1.tolist())
-    child2 = np.array(parent2.tolist())
+    child1 = parent1.get_array().copy()
+    child2 = parent2.get_array().copy()
 
     idx1 = randint(1, len(child1) - 1)
     if cross_type == 1:
@@ -178,25 +196,26 @@ def cross(parent1, parent2, cross_type):
         child1[idx1:idx2], child2[idx1:idx2] = \
             child2[idx1:idx2].tolist(), child1[idx1:idx2].tolist()
 
+    child1 = Gen(child1)
+    child2 = Gen(child2)
+
     return child1, child2
 
 
 def generate(parents, selection_type, mutation_chance=20, cross_type=1):
     """
     Realiza el cruce de los genes según dos tipos de selección diferente
-    1 -> random
-    2 -> parejas en orden de entrada
     :param parents: lista de genes para cruzar
     :param selection_type: 1 o 2 según el tipo de selección
-    :param: mutation_chance: probabilidad de 0 a 100 de mutación
-    :param: cross_type: 1 -> corte en un punto, 2 -> corte en dos puntos
-    :return: una lista con todos los genes (hijos, mutos, padres) resultantes
+    :param mutation_chance: probabilidad de 0 a 100 de mutación
+    :param cross_type: 1 -> corte en un punto, 2 -> corte en dos puntos
+    :return: una lista con todos los Genes (hijos, mutos, padres) resultantes
     """
     resulting_generation = list()
 
     if selection_type == 1:
         index_list = list(range(0, len(parents)))
-        shuffle[index_list]
+        shuffle(index_list)
 
         for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
             child1, child2 = cross(parents[gen1_idx],
