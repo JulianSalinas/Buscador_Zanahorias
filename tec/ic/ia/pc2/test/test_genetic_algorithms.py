@@ -7,6 +7,23 @@ from time import time
 from model.genetic_algorithms import *
 
 
+def test_initialization():
+
+    matrix = np.matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+    generation, matrix_shape = initialization(matrix, 3)
+
+    assert len(generation) == 3
+    assert generation[0].get_array()[1] == 2
+
+    # Se cambia el valor de otro objeto para asegurar que son instancias aparte
+    generation[1].get_array()[1] = 3
+
+    # Pero el valor de la arreglo 0 sigue siendo 2, y el del arreglo 1 es 3
+    assert generation[0].get_array()[1] == 2
+    assert generation[1].get_array()[1] == 3
+
+
 def test_crossing():
     """
     Prueba de la función de cruce para 2 genes, con ambos tipos de cruce
@@ -38,15 +55,15 @@ def test_mutation():
     gen = np.array([' ', ' ', 'C', ' ', ' ', ' ', 'Z', 'Z', ' '], dtype=object)
 
     seed(1)
-    mutation1 = mutate(gen, 20)  # Inserción de una flecha
+    mutation1, _ = mutate(gen, 20)  # Inserción de una flecha
     assert mutation1.tolist() == [' ', 'A', 'C', ' ', ' ', ' ', 'Z', 'Z', ' ']
 
     seed(2)
-    mutation2 = mutate(gen, 20)  # Inserción de una flecha
+    mutation2, _ = mutate(gen, 20)  # Inserción de una flecha
     assert mutation2.tolist() == [' ', '<', 'C', ' ', ' ', ' ', 'Z', 'Z', ' ']
 
     seed(2)
-    mutation3 = mutate(mutation2, 20)  # Cambio de dirección de la flecha
+    mutation3, _ = mutate(mutation2, 20)  # Cambio de dirección de la flecha
     assert mutation3.tolist() == [' ', '>', 'C', ' ', ' ', ' ', 'Z', 'Z', ' ']
 
     seed(time())

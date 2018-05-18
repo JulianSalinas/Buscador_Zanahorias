@@ -1,6 +1,23 @@
 
 import numpy as np
-from random import randint
+from random import randint, shuffle
+
+
+class Gen:
+    """
+    'Escructura' para manejar cada gen
+    :var gen_array: numpy array con los contenidos del tablero
+    :var score: puntaje fitness del gen
+    """
+    def __init__(self, array, score=None):
+        self.gen_array = array
+        self.score = score
+
+    def set_score(self, score): self.score = score
+
+    def get_score(self): return self.score
+
+    def get_array(self): return self.gen_array
 
 
 def _weights_():
@@ -13,13 +30,19 @@ def _weights_():
 
 def initialization(initial_board, individuals):
     """
-    Convierte a vector y genera la población inicial
+    Convierte a Gen y genera la población inicial
     :param initial_board: matriz de numpy del estado inicial
     :param individuals: cantidad de individuos por generacion
     :return: lista con los genes de la generación inicial, shape de initial
     board
     """
-    return [initial_board.getA1()]*individuals, initial_board.shape
+    first_generation = list()
+    content = initial_board.getA1().tolist()
+
+    for _ in range(0, individuals):
+        first_generation.append(Gen(np.array(content)))
+
+    return first_generation, initial_board.shape
 
 
 def mutate(gen, mutation_chance):
@@ -49,7 +72,7 @@ def mutate(gen, mutation_chance):
             arrow_symbols.remove(cell_content)
             gen[cell_idx] = arrow_symbols[randint(0, 3)]
 
-    return gen
+    return gen, mutates
 
 
 def eval_fitness(gen, direction, mat_shape):
@@ -156,6 +179,30 @@ def cross(parent1, parent2, cross_type):
             child2[idx1:idx2].tolist(), child1[idx1:idx2].tolist()
 
     return child1, child2
+
+
+def generate(parents, selection_type, mutation_chance=20, cross_type=1):
+    """
+    Realiza el cruce de los genes según dos tipos de selección diferente
+    1 -> random
+    2 -> parejas en orden de entrada
+    :param parents: lista de genes para cruzar
+    :param selection_type: 1 o 2 según el tipo de selección
+    :param: mutation_chance: probabilidad de 0 a 100 de mutación
+    :param: cross_type: 1 -> corte en un punto, 2 -> corte en dos puntos
+    :return: una lista con todos los genes (hijos, mutos, padres) resultantes
+    """
+    resulting_generation = list()
+
+    if selection_type == 1:
+        index_list = list(range(0, len(parents)))
+        shuffle[index_list]
+
+        for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
+            child1, child2 = cross(parents[gen1_idx],
+                                   parents[gen2_idx],
+                                   cross_type)
+            mutation1, mutated = mutate(child1, mutation_chance)
 
 
 def run_carrot_finder(initial_direction, individuals, generations,
