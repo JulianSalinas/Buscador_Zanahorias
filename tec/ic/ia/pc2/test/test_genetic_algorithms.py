@@ -164,7 +164,7 @@ def test_fitness():
         [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
     test_gen = Gen((np.matrix(test_matrix, dtype=object)).getA1())
     eval_fitness(test_gen, 'arriba', (15, 14))
-    assert test_gen.get_score() == 117
+    assert test_gen.get_score() == 165
 
 
 def test_creating_generation():
@@ -195,6 +195,53 @@ def test_creating_generation():
     new_generation = generate(first_generation, 1, 'arriba', shape,
                               mutation_chance=100, cross_type=1)
 
-    for x in new_generation:
-        print(x.get_array().tolist(), x.get_score())
-        print('\n')
+    assert len(new_generation) == 13
+
+    scores = [-14, -14, -14, -14, -14, -12, -12, -14, -14, -12, -12, -14, -14]
+
+    for i in range(0, 13):
+        assert scores[i] == new_generation[i].get_score()
+
+
+def test_generation_replacement():
+
+    seed(2018)
+
+    test_matrix = [
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
+    individuals = 5
+
+    test_matrix = np.matrix(test_matrix, dtype=object)
+    first_generation, shape = initialization(initial_board=test_matrix,
+                                             individuals= individuals,
+                                             direction='arriba')
+
+    assert len(first_generation) == individuals
+
+    untrimmed_generation = generate(first_generation, 1, 'arriba', shape,
+                                    mutation_chance=100, cross_type=1)
+
+    assert len(untrimmed_generation) == 13
+
+    second_generation = replacement(untrimmed_generation, individuals)
+
+    assert len(second_generation) == individuals
+
+    scores = [-12, -12, -12, -12, -14]
+
+    for i in range(0, individuals):
+        assert scores[i] == second_generation[i].get_score()

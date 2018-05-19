@@ -1,7 +1,7 @@
 
 import numpy as np
 from random import randint, shuffle
-
+from operator import attrgetter
 
 class Gen:
     """
@@ -25,7 +25,7 @@ def _weights_():
     # [1] = steps weight
     # [2] = arrows found weight
     # [3] = arrows not used weight
-    return [100, -1, -5, -10]
+    return [100, -1, -5, 2]
 
 
 def initialization(initial_board, individuals, direction, fitness=True):
@@ -214,6 +214,7 @@ def generate(parents, selection_type, direction, mat_shape,
     :return: una lista con todos los Genes (hijos, mutos, padres) resultantes
     """
     resulting_generation = list()
+    resulting_generation += parents
 
     if selection_type == 1:
         index_list = list(range(0, len(parents)))
@@ -240,12 +241,16 @@ def generate(parents, selection_type, direction, mat_shape,
             resulting_generation.append(child1)
             resulting_generation.append(child2)
 
-            resulting_generation += parents
-
     elif selection_type == 2:
         pass
 
     return resulting_generation
+
+
+def replacement(generation, individuals):
+
+    generation.sort(key=lambda gen: gen.get_score(), reverse=True)
+    return generation[:individuals]
 
 
 def run_carrot_finder(initial_direction, individuals, generations,

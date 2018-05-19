@@ -5,6 +5,6 @@ revisa el contenido de la misma para ver el tipo de mutación a aplicar.
 2. Si la celda escogida para mutar resulta ser un conejo o una zanahoria,
 entonces la mutación no ocurre.
 
-3. Para la función de fitness, únicamente se toman en cuentan las flechas por
-las que pasa el conejo. Así a como no se toman en cuenta las zanahorias que el
-conejo no recolecta, entonces la flechas que no usa tampoco.
+3. Para la función de fitness, se toman las flechas recorridas como
+penalización, y las flechas sin recorrer como ganancia, con el fin de promover
+los genes con flechas. (Dado que se empieza con 0 flechas)
