@@ -89,7 +89,6 @@ def estados_sucesores(estado_actual):
 # -----------------------------------------------------------------------------
 
 def calc_heuristico_min(heuristicos):
-
     costo = 9999
 
     if heuristicos.qsize() > 0:
@@ -139,6 +138,22 @@ def eliminar_sucesor_viejo(sucesores, sucesor_viejo):
 
 # -----------------------------------------------------------------------------
 
+def delimitar_rango_vision(matriz, pos_actual, rango_vision):
+    zanahorias = calc_pos_simbolo(matriz, 'Z')
+    zanahorias_res = []
+
+    for zanahoria in zanahorias:
+        if (pos_actual[0] - rango_vision <= zanahoria[0] <=
+                pos_actual[0] + rango_vision):
+            if (pos_actual[1] - rango_vision <= zanahoria[1] <=
+                    pos_actual[1] + rango_vision):
+                zanahorias_res.append(zanahoria)
+
+    return zanahorias_res
+
+
+# -----------------------------------------------------------------------------
+
 def a_estrella(matriz, rango_vision, cant_zanahorias):
     pos_actual = calc_pos_conejo(matriz)
     pasos_actuales = 0
@@ -153,7 +168,7 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
 
         # Buscamos si hay zanahorias en el rango de vision
         # zanahorias = calc_pos_simbolo(matriz_visible, 'Z')
-        zanahorias = calc_pos_simbolo(matriz, 'Z')
+        zanahorias = delimitar_rango_vision(matriz, pos_actual, rango_vision)
 
         # Creamos una lista donde agregamos el calculo del heuristico
         # para cada sucesor, obteniendo [[costo_heuristico, sucesor],...]
@@ -219,26 +234,24 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
 # -----------------------------------------------------------------------------
 
 test_matrix = [
-    ['','','','N','','','Z'],
-    ['','Z','','N','','',''],
-    ['G','','Z','','','Z',''],
-    ['','','Z','','','',''],
-    ['A','B','','','','C',''],
-    ['Z','','','Z','','','']
+    ['', '', '', 'N', '', '', 'Z'],
+    ['', 'Z', '', 'N', '', '', ''],
+    ['G', '', 'Z', '', '', 'Z', ''],
+    ['', '', 'Z', '', '', '', ''],
+    ['A', 'B', '', '', '', 'C', ''],
+    ['Z', '', '', 'Z', '', '', '']
 ]
 
 matriz2 = np.arange(50).reshape(5, 10)
 
-
 test_matrix = np.matrix(test_matrix)
 
 print('---------- Heuristicos ----------')
-distancias = calc_heuristico([1, 2], [[0,3], [3,0], [3,1]])
+distancias = calc_heuristico([1, 2], [[0, 3], [3, 0], [3, 1]])
 print('Heuristico min:\t', calc_heuristico_min(distancias))
 for i in range(distancias.qsize()):
     x = distancias.get()
     print('valor: ', x[0], ' - Meta: ', x[1])
-
 
 print('\n---------- Sub Matriz ----------')
 posicion_actual = [4, 1]
@@ -247,15 +260,12 @@ print('Matriz original: \n', test_matrix)
 print('\nSubMatriz: \n',
       calc_submatriz(test_matrix, posicion_actual, rango_vision))
 
-
 print('\n---------- Posicion de las Zanahorias en la matriz ----------')
-print('Matriz original: \n',test_matrix)
+print('Matriz original: \n', test_matrix)
 print('Posiciones:\n', calc_pos_simbolo(test_matrix, 'Z'))
-
 
 print('\n---------- Calcular posicion del conejo en la matriz ----------')
 print('Posicion del conejo:\n', calc_pos_conejo(test_matrix))
-
 
 # print('\n---------- Desplazar conejo en la matriz ----------')
 # pos_vieja = [0, 0]
@@ -264,7 +274,7 @@ print('Posicion del conejo:\n', calc_pos_conejo(test_matrix))
 #       desplazar_conejo(test_matrix, pos_vieja, pos_nueva))
 
 print('\n---------- Eliminar sucesor viejo----------\n')
-print(eliminar_sucesor_viejo(test_matrix, ['A','B','','Z','','','']))
+print(eliminar_sucesor_viejo(test_matrix, ['A', 'B', '', 'Z', '', '', '']))
 
 print('\n---------- Conjunto de estados sucesores ----------\n')
 pos_actual = [2, 2]
