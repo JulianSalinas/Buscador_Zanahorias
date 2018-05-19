@@ -1,7 +1,7 @@
 
 import numpy as np
-from random import randint, shuffle
-from operator import attrgetter
+from random import randint, shuffle, seed
+
 
 class Gen:
     """
@@ -20,12 +20,12 @@ class Gen:
     def get_array(self): return self.gen_array
 
 
-def _weights_():
+def weights():
     # [0] = picked carrots weight
     # [1] = steps weight
     # [2] = arrows found weight
     # [3] = arrows not used weight
-    return [100, -1, -5, 2]
+    return [5000, -1, -5, -2]
 
 
 def initialization(initial_board, individuals, direction, fitness=True):
@@ -162,10 +162,10 @@ def eval_fitness(gen, direction, mat_shape):
         else:
             break
 
-    cw = picked_carrots * _weights_()[0]                 # zanahorias cogidas
-    sw = steps * _weights_()[1]                          # pasos dados
-    aw = arrows_found * _weights_()[2]                   # flechas usadas
-    auw = (arrow_count - arrows_found) * _weights_()[3]  # flechas sin usar
+    cw = picked_carrots * weights()[0]                 # zanahorias cogidas
+    sw = steps * weights()[1]                          # pasos dados
+    aw = arrows_found * weights()[2]                   # flechas usadas
+    auw = (arrow_count - arrows_found) * weights()[3]  # flechas sin usar
 
     score = cw + sw + aw + auw
 
@@ -201,6 +201,42 @@ def cross(parent1, parent2, cross_type):
     return child1, child2
 
 
+def get_children(parent1, parent2, cross_type, direction, mat_shape,
+                 mutation_chance):
+    """
+    Dados un par de padres, se crean los hijos y sus mutaciones en caso de
+    haberlas
+    :param parent1: objeto tipo Gen
+    :param parent2: objeto tipo Gen
+    :param cross_type: tipo de cruce, 1 o 2
+    :param direction: dirección inicial del conejo para el fitness
+    :param mat_shape: dimensiones del tablero para el fitness
+    :param mutation_chance: porcentaje de mutación entre 0 y 100
+    :return:
+    """
+    children = list()
+
+    child1, child2 = cross(parent1, parent2, cross_type)
+
+    eval_fitness(child1, direction, mat_shape)
+    eval_fitness(child2, direction, mat_shape)
+
+    mutation1, mutated = mutate(child1, mutation_chance)
+    if mutated:
+        eval_fitness(mutation1, direction, mat_shape)
+        children.append(mutation1)
+
+    mutation2, mutated = mutate(child2, mutation_chance)
+    if mutated:
+        eval_fitness(mutation2, direction, mat_shape)
+        children.append(mutation2)
+
+    children.append(child1)
+    children.append(child2)
+
+    return children
+
+
 def generate(parents, selection_type, direction, mat_shape,
              mutation_chance, cross_type):
     """
@@ -221,25 +257,12 @@ def generate(parents, selection_type, direction, mat_shape,
         shuffle(index_list)
 
         for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
-            child1, child2 = cross(parents[gen1_idx],
-                                   parents[gen2_idx],
-                                   cross_type)
-
-            eval_fitness(child1, direction, mat_shape)
-            eval_fitness(child2, direction, mat_shape)
-
-            mutation1, mutated = mutate(child1, mutation_chance)
-            if mutated:
-                eval_fitness(mutation1, direction, mat_shape)
-                resulting_generation.append(mutation1)
-
-            mutation2, mutated = mutate(child2, mutation_chance)
-            if mutated:
-                eval_fitness(mutation2, direction, mat_shape)
-                resulting_generation.append(mutation2)
-
-            resulting_generation.append(child1)
-            resulting_generation.append(child2)
+            resulting_generation += get_children(parents[gen1_idx],
+                                                 parents[gen2_idx],
+                                                 cross_type,
+                                                 direction,
+                                                 mat_shape,
+                                                 mutation_chance)
 
     elif selection_type == 2:
         pass
@@ -248,11 +271,68 @@ def generate(parents, selection_type, direction, mat_shape,
 
 
 def replacement(generation, individuals):
-
+    """
+    Escoge los genes más aptos para conformar la siguiente generación
+    :param generation: lista con todos los padres, hijos y mutos
+    :param individuals: cantidad de individuos por generación
+    :return: lista con la generación ya recortada
+    """
+    # Se ordena de mayor a menor
     generation.sort(key=lambda gen: gen.get_score(), reverse=True)
     return generation[:individuals]
 
 
-def run_carrot_finder(initial_direction, individuals, generations,
-                      initial_board):
-    pass
+def run_carrot_finder(initial_direction, individuals, max_generations,
+                      mutation_chance, initial_board, selection_type=1,
+                      cross_type=1):
+
+    # Definición de la población inicial
+    generation, dimensions = initialization(initial_board=initial_board,
+                                            individuals=individuals,
+                                            direction=initial_direction)
+
+    for generation_number in range(1, max_generations+1):
+
+        # Se obtiene la generación completa sin ordenar
+        generation = generate(parents=generation,
+                              direction=initial_direction,
+                              mutation_chance=mutation_chance,
+                              mat_shape=dimensions,
+                              selection_type=selection_type,
+                              cross_type=cross_type)
+
+        # Se seleccionan los mejores
+        generation = replacement(generation, individuals)
+
+    return generation[0]
+
+
+seed(2018)
+
+starting_board = [
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
+starting_board = np.matrix(starting_board, object)
+
+optimal = run_carrot_finder(initial_direction='arriba',
+                            individuals=5,
+                            max_generations=100,
+                            mutation_chance=30,
+                            initial_board=starting_board)
+
+eval_fitness(optimal, 'arriba', starting_board.shape)
+print(optimal.get_score())
+print(optimal.get_array().reshape(starting_board.shape))
