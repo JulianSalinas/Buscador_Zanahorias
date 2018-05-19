@@ -9,7 +9,7 @@ class Gen:
     :var gen_array: numpy array con los contenidos del tablero
     :var score: puntaje fitness del gen
     """
-    def __init__(self, array, score=None):
+    def __init__(self, array, score=0):
         self.gen_array = array
         self.score = score
 
@@ -21,11 +21,42 @@ class Gen:
 
 
 def weights():
-    # [0] = picked carrots weight
-    # [1] = steps weight
-    # [2] = arrows found weight
-    # [3] = arrows not used weight
-    return [5000, -1, -5, -2]
+    # ['pc'] = picked carrots weight
+    # ['s'] = steps weight
+    # ['af'] = arrows found weight
+    # ['anf'] = arrows not found weight
+    # ['apc'] = arrows pointing carrots
+
+    _weights = {
+        'pc': 5000,
+        's': -1,
+        'af': -5,
+        'anf': -2,
+        'apc': 50
+    }
+    return _weights
+
+
+def direction_to_arrow(direction):
+    if direction == 'arriba':
+        return 'A'
+    if direction == 'abajo':
+        return 'V'
+    if direction == 'derecha':
+        return '>'
+
+    return '<'
+
+
+def a_idx_to_m_index(a_idx, mat_shape):
+    """
+    Convierte un índice de array al correspondiente índide de matriz según
+    las dimensiones de la matriz
+    :param a_idx: índice del arreglo
+    :param mat_shape: dimensiones de la matriz (f, c)
+    :return: par ordenado, file x columna para el índice de una matriz
+    """
+    return int(a_idx / mat_shape[1]), a_idx % mat_shape[1]
 
 
 def initialization(initial_board, individuals, direction, fitness=True):
@@ -43,7 +74,8 @@ def initialization(initial_board, individuals, direction, fitness=True):
     if fitness:
         score = eval_fitness(Gen(np.array(content, object)), direction,
                              initial_board.shape)
-    else: score = None
+    else:
+        score = None
 
     for _ in range(0, individuals):
         first_generation.append(Gen(np.array(content, object), score))
@@ -58,9 +90,8 @@ def mutate(gen, mutation_chance):
     o el cambio de dirección de una flecha
     :param gen: objeto Gen
     :param mutation_chance: probabilidad de mutación de 0 a 100
-    :param direction: direccion inicial del conejo para evaluar fitness
-    :param mat_shape: dimensiones de la matriz para evaluar fitness
-    :return: el gen luego de la mutación o sin mutar
+    :return: el gen luego de la mutación o sin mutar, y la posición del
+    array donde muto, o en su defecto -1 en caso de no haber mutado
     """
     temp = gen.get_array().copy()
     arrow_symbols = ['<', '>', 'A', 'V']
@@ -82,12 +113,17 @@ def mutate(gen, mutation_chance):
     return Gen(temp), mutates
 
 
+def carrot_found_on_subpath(board, path_start, direction):
+    pass
+
+
 def eval_fitness(gen, direction, mat_shape):
     """
     calcula la aptitud para un gen
     :param gen: objeto tipo Gen
     :param direction: dirección inicial del conejo
     :param mat_shape: dimensiones de la matriz
+    de no haber mutado
     :return: Gen con el atributo score alterado
     """
     temp = (gen.get_array().copy()).reshape(mat_shape)
@@ -124,15 +160,19 @@ def eval_fitness(gen, direction, mat_shape):
         return False if col == mat_shape[1] else True
 
     def move():
-        if direction == 'arriba':
+        if direction == 'A':
             return move_up()
-        elif direction == 'abajo':
+        elif direction == 'V':
             return move_down()
-        elif direction == 'derecha':
+        elif direction == '>':
             return move_right()
         else:
             return move_left()
 
+    arrow_symbols = ['<', '>', 'A', 'V']
+
+    # Recorrer el camino del conejo para determinar las zanahorias, pasos y
+    # las flechas que encuentra
     while True:
         if picked_carrots == carrot_count:
             break
@@ -143,31 +183,20 @@ def eval_fitness(gen, direction, mat_shape):
             if cell_content is 'Z':
                 picked_carrots += 1
                 temp[row][col] = ' '
-            elif cell_content is 'V':
+            elif cell_content in arrow_symbols:
                 arrows_found += 1
-                direction = 'abajo'
+                direction = cell_content
                 temp[row][col] = ' '
-            elif cell_content is 'A':
-                arrows_found += 1
-                direction = 'arriba'
-                temp[row][col] = ' '
-            elif cell_content is '<':
-                arrows_found += 1
-                direction = 'izquierda'
-                temp[row][col] = ' '
-            elif cell_content is '>':
-                arrows_found += 1
-                direction = 'derecha'
-                temp[row][col] = ' '
+
         else:
             break
 
-    cw = picked_carrots * weights()[0]                 # zanahorias cogidas
-    sw = steps * weights()[1]                          # pasos dados
-    aw = arrows_found * weights()[2]                   # flechas usadas
-    auw = (arrow_count - arrows_found) * weights()[3]  # flechas sin usar
+    pcw = picked_carrots * weights()['pc']
+    sw = steps * weights()['s']
+    afw = arrows_found * weights()['af']
+    anfw = (arrow_count - arrows_found) * weights()['anf']
 
-    score = cw + sw + aw + auw
+    score = pcw + sw + afw + anfw
 
     gen.set_score(score)
 
@@ -286,6 +315,8 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
                       mutation_chance, initial_board, selection_type=1,
                       cross_type=1):
 
+    initial_direction = direction_to_arrow(initial_direction)
+
     # Definición de la población inicial
     generation, dimensions = initialization(initial_board=initial_board,
                                             individuals=individuals,
@@ -304,10 +335,9 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
         # Se seleccionan los mejores
         generation = replacement(generation, individuals)
 
-    return generation[0]
+    return generation
 
 
-seed(2018)
 
 starting_board = [
         [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -327,12 +357,13 @@ starting_board = [
         [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
 
-optimal = run_carrot_finder(initial_direction='arriba',
-                            individuals=5,
+optimals = run_carrot_finder(initial_direction='arriba',
+                            individuals=10,
                             max_generations=100,
                             mutation_chance=30,
                             initial_board=starting_board)
 
-eval_fitness(optimal, 'arriba', starting_board.shape)
-print(optimal.get_score())
-print(optimal.get_array().reshape(starting_board.shape))
+for optimal in optimals:
+    print(optimal.get_score())
+    print(optimal.get_array().reshape(starting_board.shape))
+    print('__________________________________________________________________')

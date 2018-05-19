@@ -7,6 +7,23 @@ from time import time
 from model.genetic_algorithms import *
 
 
+def test_direction_to_arrow():
+
+    assert direction_to_arrow('arriba') == 'A'
+    assert direction_to_arrow('derecha') == '>'
+
+
+def test_array_idx_to_matrix_index():
+
+    matrix_shape = (4, 3)
+    array_index = 9
+    assert a_idx_to_m_index(array_index, matrix_shape) == (3, 0)
+
+    matrix_shape = (2, 5)
+    array_index = 9
+    assert a_idx_to_m_index(array_index, matrix_shape) == (1, 4)
+
+
 def test_initialization():
 
     matrix = np.matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
