@@ -27,16 +27,16 @@ def weights():
     # ['af'] = arrows found weight        (flechas pisadas)
     # ['anf'] = arrows not found weight   (flechas sin usar)
     # ['apc'] = arrows pointing carrots   (flechas que apuntan directo a Z)
-    # ['180°'] = 180 turn                 (giro en 180 grados)
+    # ['180°t'] = 180 turn                 (giro en 180 grados)
 
     _weights = {
         'pc': 5000,
         'f': -5000,
         's': -1,
         'af': -5,
-        'anf': -2,
+        'anf': -10,
         'apc': 50,
-        '180°': -1000
+        '180°t': -1000
     }
     return _weights
 
@@ -188,16 +188,19 @@ def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape):
         else:
             return move_left()
 
-    arrow_symbols = ['<', '>', 'A', 'V']
     picked_carrots = 0
     steps = 0
     arrows_found = 0
+    _180_degree_turns = 0
+
+    arrow_symbols = ['<', '>', 'A', 'V']
+    opposite_direction = {'A': 'V', 'V': 'A', '>': '<', '<': '>'}
 
     # Recorrer el camino del conejo para determinar las zanahorias, pasos y
     # las flechas que encuentra
     while True:
         if picked_carrots == carrot_count:
-            return picked_carrots, steps, arrows_found
+            break
 
         if valid_move():
             steps += 1
@@ -206,12 +209,17 @@ def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape):
                 picked_carrots += 1
                 board[row][col] = ' '
             elif cell_content in arrow_symbols:
+                # Revisar los giros en 180 grados
+                if opposite_direction[direction] is cell_content:
+                    _180_degree_turns += 1
                 arrows_found += 1
                 direction = cell_content
                 board[row][col] = ' '
 
         else:
-            return picked_carrots, steps, arrows_found
+            break
+
+    return picked_carrots, steps, arrows_found, _180_degree_turns
 
 
 def eval_fitness(gen, direction, mat_shape):
@@ -235,7 +243,7 @@ def eval_fitness(gen, direction, mat_shape):
     row = init_position[0][0]
     col = init_position[1][0]
 
-    picked_carrots, steps, arrows_found = walk_rabbit_path(
+    picked_carrots, steps, arrows_found, _180_degree_turns = walk_rabbit_path(
         board=temp,
         direction=direction,
         row=row,
@@ -248,8 +256,9 @@ def eval_fitness(gen, direction, mat_shape):
     afw = arrows_found * weights()['af']
     anfw = (arrow_count - arrows_found) * weights()['anf']
     apcw = arrows_pointing * weights()['apc']
+    _180dtw = _180_degree_turns * weights()['180°t']
 
-    score = pcw + sw + afw + anfw + apcw
+    score = pcw + sw + afw + anfw + apcw + _180dtw
 
     gen.set_score(score)
 
@@ -345,10 +354,16 @@ def generate(parents, selection_type, direction, mat_shape,
                                                  direction,
                                                  mat_shape,
                                                  mutation_chance)
-            if len(resulting_generation) == 18:
-                x = 1
+
     elif selection_type == 2:
-        pass
+        _range = range(0, int(len(resulting_generation)/2))
+        for i in _range:
+            resulting_generation += get_children(parents[i*2],
+                                                 parents[i*2+1],
+                                                 cross_type,
+                                                 direction,
+                                                 mat_shape,
+                                                 mutation_chance)
 
     return resulting_generation
 
@@ -411,10 +426,12 @@ starting_board = [
 starting_board = np.matrix(starting_board, object)
 
 optimals = run_carrot_finder(initial_direction='arriba',
-                             individuals=10,
-                             max_generations=500,
+                             individuals=20,
+                             max_generations=300,
                              mutation_chance=30,
-                             initial_board=starting_board)
+                             initial_board=starting_board,
+                             selection_type=1,
+                             cross_type=1)
 
 for optimal in optimals:
     print(optimal.get_score())
