@@ -108,6 +108,9 @@ def calc_mejor_sucesor(sucesores):
         costo_mejor = mejor_sucesor[0]
         if costo_sucesor < costo_mejor:
             mejor_sucesor = sucesor
+        elif costo_sucesor == costo_mejor:
+            if np.random.choice([True, False]):
+                mejor_sucesor = sucesor
 
     return mejor_sucesor
 
@@ -179,7 +182,7 @@ def castigar_distancia(sucesores, zanahorias, pasos_actuales):
             heuristicos = calc_distancia_lineal(sucesor[0], zanahorias)
             costo_heuristico = calc_heuristico_min(heuristicos)
         else:
-            costo_heuristico = 90
+            costo_heuristico = 15
 
         costo_total = pasos_actuales + costo_heuristico
         costo_sucesores.append([costo_total, sucesor])
@@ -218,10 +221,27 @@ def castigar_emisferios(matriz, costo_sucesores, pos_actual):
 
 # -----------------------------------------------------------------------------
 
+def castigar_esp_desconocido(costo_sucesores, forma_matriz):
+
+    for i in costo_sucesores:
+        posicion = i[1][0]
+        if (0 > posicion[0] > forma_matriz[0] - 1) or\
+                (0 > posicion[1] > forma_matriz[1] - 1):
+            i[1][0] += 999
+
+    return costo_sucesores
+
+
+# -----------------------------------------------------------------------------
+
 def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
                         pos_actual, rango_vision):
     # Obtenemos una submatriz con el rango de vision del conejo
     matriz_visible = calc_submatriz(matriz, pos_actual, rango_vision)
+
+    # Determinamos la forma de la matriz original
+    m2 = np.matrix(matriz)
+    forma_matriz = m2.shape
 
     # Castigamos segun la distancia lineal a las zanahorias
     costo_sucesores = castigar_distancia(sucesores, zanahorias, pasos_actuales)
@@ -229,6 +249,9 @@ def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
     # Castigamos segun la region que tenga mas zanahorias
     costo_sucesores = castigar_emisferios(matriz_visible, costo_sucesores,
                                           pos_actual)
+
+    # Castigamos si el sucesor va a un espacio desconocido
+    costo_sucesores = castigar_esp_desconocido(costo_sucesores, forma_matriz)
 
     return costo_sucesores
 
