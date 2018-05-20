@@ -20,6 +20,10 @@ class Gen:
     def get_array(self): return self.gen_array
 
 
+__print_frecuency__ = 100
+__print_per_generation__ = 10
+
+
 def weights():
     # ['pc'] = picked carrots weight      (zanahorias pisadas)
     # ['f'] = fall                        (salirse del tablero)
@@ -412,7 +416,11 @@ def replacement(generation, individuals):
 def run_carrot_finder(initial_direction, individuals, max_generations,
                       mutation_chance, initial_board, selection_type=1,
                       cross_type=1):
+
     initial_direction = direction_to_arrow()[initial_direction]
+
+    optimal_origin_generation = -1
+    current_best_score = 0
 
     # Definición de la población inicial
     generation, dimensions = initialization(initial_board=initial_board,
@@ -432,17 +440,26 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
         # Se seleccionan los mejores
         generation = replacement(generation, individuals)
 
-        global optimal_origin_generation
-        global current_best_score
         if generation[0].get_score() > current_best_score:
             optimal_origin_generation = generation_number
             current_best_score = generation[0].get_score()
 
+        if generation_number % __print_frecuency__ == 0:
+            print('\nGENERACIÓN: {:05}'.format(generation_number))
+            for i in range(0, len(generation[:__print_per_generation__])):
+                print(
+                    '\tINDIVIDUO: {:05}'.format(i),
+                    ' -> APTITUD: ' + str(generation[i].get_score())
+                )
+
+    print('\nMÁS APTO ENCONTRADO: ')
+    print(generation[0].get_array().reshape(starting_board.shape))
+    print('\nAPTITUD DEL MEJOR ENCONTRADO:', generation[0].get_score())
+    print('\nGENERACIÓN DEL MEJOR ENCONTRADO:',
+          '{:05}'.format(optimal_origin_generation))
+
     return generation
 
-"""
-optimal_origin_generation = 0
-current_best_score = -250
 
 starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -464,14 +481,8 @@ starting_board = np.matrix(starting_board, object)
 
 optimal = run_carrot_finder(initial_direction='derecha',
                             individuals=10,
-                            max_generations=300,
+                            max_generations=1000,
                             mutation_chance=80,
                             initial_board=starting_board,
                             selection_type=1,
                             cross_type=1)[0]
-
-print(optimal.get_score())
-print(optimal.get_array().reshape(starting_board.shape))
-
-print(optimal_origin_generation)
-"""
