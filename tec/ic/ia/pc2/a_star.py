@@ -49,7 +49,7 @@ def calc_pos_simbolo(matriz, simbolo):
 
 # -----------------------------------------------------------------------------
 
-def desplazar_conejo(matriz, pos_vieja, pos_nueva, simbolo_vacio='',
+def desplazar_conejo(matriz, pos_vieja, pos_nueva, simbolo_vacio=' ',
                      simbolo_conejo='C'):
     pos_x = pos_vieja[0]
     pos_y = pos_vieja[1]
@@ -368,12 +368,12 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
 # -----------------------------------------------------------------------------
 
 test_matrix = [
-    ['', '', '', 'N', '', '', 'Z'],
-    ['', 'Z', '', 'N', '', '', ''],
-    ['G', '', 'Z', '', '', 'Z', ''],
-    ['', '', 'Z', '', '', '', ''],
-    ['A', 'B', '', '', '', 'C', ''],
-    ['Z', '', '', 'Z', '', '', '']
+    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+    ['G', ' ', 'Z', ' ', ' ', 'Z', ' '],
+    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+    ['A', 'B', ' ', ' ', ' ', 'C', ' '],
+    ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
 ]
 
 matriz2 = np.arange(50).reshape(5, 10)
@@ -408,7 +408,7 @@ print('Posicion del conejo:\n', calc_pos_conejo(test_matrix))
 #       desplazar_conejo(test_matrix, pos_vieja, pos_nueva))
 
 print('\n---------- Eliminar sucesor viejo----------\n')
-print(eliminar_sucesor_viejo(test_matrix, ['A', 'B', '', 'Z', '', '', '']))
+print(eliminar_sucesor_viejo(test_matrix, ['A', 'B', ' ', 'Z', ' ', ' ', ' ']))
 
 print('\n---------- Conjunto de estados sucesores ----------\n')
 pos_actual = [2, 2]
@@ -426,4 +426,4 @@ print('MatrizI<q:\n', m1)
 print('MatrizDer:\n', m2)
 
 print('\n---------- FUNCION A ESTRELLA ----------\n')
-a_estrella(test_matrix, 5, 5)
+a_estrella(test_matrix, 3, 5)
