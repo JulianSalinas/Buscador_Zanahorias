@@ -31,7 +31,7 @@ def weights():
 
     _weights = {
         'pc': 5000,
-        'f': -5000,
+        'f': -2500,
         's': -1,
         'af': -5,
         'anf': -10,
@@ -200,6 +200,7 @@ def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape):
     # las flechas que encuentra
     while True:
         if picked_carrots == carrot_count:
+            rabbit_fall = False
             break
 
         if valid_move():
@@ -217,9 +218,10 @@ def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape):
                 board[row][col] = ' '
 
         else:
+            rabbit_fall = True
             break
 
-    return picked_carrots, steps, arrows_found, _180_degree_turns
+    return picked_carrots, steps, arrows_found, _180_degree_turns, rabbit_fall
 
 
 def eval_fitness(gen, direction, mat_shape):
@@ -243,22 +245,25 @@ def eval_fitness(gen, direction, mat_shape):
     row = init_position[0][0]
     col = init_position[1][0]
 
-    picked_carrots, steps, arrows_found, _180_degree_turns = walk_rabbit_path(
-        board=temp,
-        direction=direction,
-        row=row,
-        col=col,
-        mat_shape=mat_shape,
-        carrot_count=carrot_count)
+    results = walk_rabbit_path(board=temp, direction=direction,
+                               row=row, col=col, mat_shape=mat_shape,
+                               carrot_count=carrot_count)
+
+    picked_carrots = results[0]
+    steps = results[1]
+    arrows_found = results[2]
+    _180_degree_turns = results[3]
+    rabbit_fall = results[4]
 
     pcw = picked_carrots * weights()['pc']
+    fw = weights()['f'] if rabbit_fall else 0
     sw = steps * weights()['s']
     afw = arrows_found * weights()['af']
     anfw = (arrow_count - arrows_found) * weights()['anf']
     apcw = arrows_pointing * weights()['apc']
     _180dtw = _180_degree_turns * weights()['180°t']
 
-    score = pcw + sw + afw + anfw + apcw + _180dtw
+    score = pcw + sw + afw + anfw + apcw + _180dtw + fw
 
     gen.set_score(score)
 
