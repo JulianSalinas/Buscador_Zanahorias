@@ -42,18 +42,22 @@ def weights():
 
 
 def gen_in_list(gen, gen_list):
+    """
+    Revisa si el genotipo de un determinado gen es igual a alguno de los
+    genes en una lista
+    :param gen: objeto Gen a buscar
+    :param gen_list: lista con objetos Gen
+    :return: True si encuentra un genotipo igual, False de lo contrario
+    """
     return any((gen.get_array() == g.get_array()).all() for g in gen_list)
 
 
-def direction_to_arrow(direction):
-    if direction == 'arriba':
-        return 'A'
-    if direction == 'abajo':
-        return 'V'
-    if direction == 'derecha':
-        return '>'
-
-    return '<'
+def direction_to_arrow():
+    """
+    Define la flecha correspondiente para el parámetro inicial del programa
+    :return: diccionario con las correspondencias
+    """
+    return {'arriba': 'A', 'abajo': 'V', 'derecha': '>', 'izquierda': '<'}
 
 
 def a_idx_to_m_index(a_idx, mat_shape):
@@ -161,6 +165,17 @@ def arrows_pointing_to_carrots(board, carrot_positions):
 
 
 def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape):
+    """
+    Simula el recorrido del conejo en el tablero para obtener datos usados
+    por el fitness
+    :param board: numpy matrix con el tablero disponible
+    :param direction: dirección inicial del conejo
+    :param row: fila de la posición inicial del conejo
+    :param col: columna de la posición inicial del conejo
+    :param carrot_count: cantidad de zanahorias existentes
+    :param mat_shape: tupla con dimensiones de la matriz (filas, columnas)
+    :return: contadores usados por el fitness
+    """
     def move_up():
         nonlocal row
         row -= 1
@@ -397,7 +412,7 @@ def replacement(generation, individuals):
 def run_carrot_finder(initial_direction, individuals, max_generations,
                       mutation_chance, initial_board, selection_type=1,
                       cross_type=1):
-    initial_direction = direction_to_arrow(initial_direction)
+    initial_direction = direction_to_arrow()[initial_direction]
 
     # Definición de la población inicial
     generation, dimensions = initialization(initial_board=initial_board,
@@ -425,7 +440,7 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
 
     return generation
 
-
+"""
 optimal_origin_generation = 0
 current_best_score = -250
 
@@ -459,3 +474,4 @@ print(optimal.get_score())
 print(optimal.get_array().reshape(starting_board.shape))
 
 print(optimal_origin_generation)
+"""

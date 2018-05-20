@@ -7,10 +7,24 @@ from time import time
 from model.genetic_algorithms import *
 
 
+def test_gen_in_list():
+
+    gen = Gen(np.array([' ', ' ', 'C', ' ', ' ', ' ', 'Z', 'Z', ' '],
+                       dtype=object))
+    gen2 = Gen(np.array([' ', ' ', 'C', ' ', ' ', ' ', 'Z', 'Z', ' '],
+                        dtype=object))
+    gen3 = Gen(np.array([' ', ' ', 'C', ' ', ' ', ' ', ' ', 'Z', ' '],
+                        dtype=object))
+
+    gen_list = [gen2, gen3]
+
+    assert gen_in_list(gen, gen_list) == True
+
+
 def test_direction_to_arrow():
 
-    assert direction_to_arrow('arriba') == 'A'
-    assert direction_to_arrow('derecha') == '>'
+    assert direction_to_arrow()['arriba'] == 'A'
+    assert direction_to_arrow()['derecha'] == '>'
 
 
 def test_array_idx_to_matrix_index():
@@ -221,7 +235,7 @@ def test_creating_generation():
     new_generation = generate(first_generation, 1, 'arriba', shape,
                               mutation_chance=100, cross_type=1)
 
-    assert len(new_generation) == 13
+    assert len(new_generation) == 9
 
     seed(time())
 
@@ -258,7 +272,7 @@ def test_generation_replacement():
     untrimmed_generation = generate(first_generation, 1, 'arriba', shape,
                                     mutation_chance=100, cross_type=1)
 
-    assert len(untrimmed_generation) == 13
+    assert len(untrimmed_generation) == 9
 
     second_generation = replacement(untrimmed_generation, individuals)
 
