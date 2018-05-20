@@ -93,7 +93,6 @@ def calc_heuristico_min(heuristicos):
 
     if heuristicos.qsize() > 0:
         mejor_valor = heuristicos.get()
-        meta = mejor_valor[1]
         costo = mejor_valor[0]
 
     return costo
@@ -252,10 +251,10 @@ def direccion_padre(direccion):
 def castigar_direccion_padre(costo_sucesores, direccion_vieja):
 
     if len(direccion_vieja) > 0 and direccion_vieja[0]:
-        dir = direccion_padre(direccion_vieja[1])
+        direccion = direccion_padre(direccion_vieja[1])
 
         for i in costo_sucesores:
-            if i[1][1] == dir:
+            if i[1][1] == direccion:
                 i[0] += 50
 
     return costo_sucesores
@@ -361,69 +360,3 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
                        costo_arriba, costo_abajo, mejor_movimiento))
 
     print('PASO: %s FINAL' % (str(pasos_actuales).zfill(5)))
-
-
-# -----------------------------------------------------------------------------
-# ------------------ Pruebas --------------------------------------------------
-# -----------------------------------------------------------------------------
-
-test_matrix = [
-    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
-    ['G', ' ', 'Z', ' ', ' ', 'Z', ' '],
-    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
-    ['A', 'B', ' ', ' ', ' ', 'C', ' '],
-    ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
-]
-
-matriz2 = np.arange(50).reshape(5, 10)
-
-test_matrix = np.matrix(test_matrix)
-
-print('---------- Heuristicos ----------')
-distancias = calc_distancia_lineal([1, 2], [[0, 3], [3, 0], [3, 1]])
-print('Heuristico min:\t', calc_heuristico_min(distancias))
-for i in range(distancias.qsize()):
-    x = distancias.get()
-    print('valor: ', x[0], ' - Meta: ', x[1])
-
-print('\n---------- Sub Matriz ----------')
-posicion_actual = [4, 1]
-rango_vision = 1
-print('Matriz original: \n', test_matrix)
-print('\nSubMatriz: \n',
-      calc_submatriz(test_matrix, posicion_actual, rango_vision))
-
-print('\n---------- Posicion de las Zanahorias en la matriz ----------')
-print('Matriz original: \n', test_matrix)
-print('Posiciones:\n', calc_pos_simbolo(test_matrix, 'Z'))
-
-print('\n---------- Calcular posicion del conejo en la matriz ----------')
-print('Posicion del conejo:\n', calc_pos_conejo(test_matrix))
-
-# print('\n---------- Desplazar conejo en la matriz ----------')
-# pos_vieja = [0, 0]
-# pos_nueva = [0, 1]
-# print('Movimiento Realizado\n',
-#       desplazar_conejo(test_matrix, pos_vieja, pos_nueva))
-
-print('\n---------- Eliminar sucesor viejo----------\n')
-print(eliminar_sucesor_viejo(test_matrix, ['A', 'B', ' ', 'Z', ' ', ' ', ' ']))
-
-print('\n---------- Conjunto de estados sucesores ----------\n')
-pos_actual = [2, 2]
-print('Estado Actual:\t', pos_actual)
-print('Estados Sucesores:\n', estados_sucesores(pos_actual))
-
-print('\n---------- SPLIT HORIZONTAL ----------\n')
-m1, m2 = split_horizontal_matriz(test_matrix, pos_actual)
-print('MatrizArriba:\n', m1)
-print('MatrizAbajo:\n', m2)
-
-print('\n---------- SPLIT VERTICAL ----------\n')
-m1, m2 = split_vertical_matriz(test_matrix, pos_actual)
-print('MatrizI<q:\n', m1)
-print('MatrizDer:\n', m2)
-
-print('\n---------- FUNCION A ESTRELLA ----------\n')
-a_estrella(test_matrix, 3, 5)
