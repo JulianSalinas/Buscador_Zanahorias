@@ -154,6 +154,59 @@ def delimitar_rango_vision(matriz, pos_actual, rango_vision):
 
 # -----------------------------------------------------------------------------
 
+def split_horizontal_matriz(matriz, pos_actual):
+    matriz_1 = matriz[:pos_actual[0], :]
+    matriz_2 = matriz[pos_actual[0]:, :]
+    return matriz_1, matriz_2
+
+
+# -----------------------------------------------------------------------------
+
+def split_vertical_matriz(matriz, pos_actual):
+    matriz_1 = matriz[:, :pos_actual[0]]
+    matriz_2 = matriz[:, pos_actual[0]:]
+    return matriz_1, matriz_2
+
+
+# -----------------------------------------------------------------------------
+
+def calcular_heuristicos(sucesores, zanahorias, pasos_actuales):
+    costo_sucesores = []
+
+    for sucesor in sucesores:
+        if len(zanahorias) > 0:
+            heuristicos = calc_heuristico(sucesor[0], zanahorias)
+            costo_heuristico = calc_heuristico_min(heuristicos)
+        else:
+            costo_heuristico = 999
+
+        costo_total = pasos_actuales + costo_heuristico
+        costo_sucesores.append([costo_total, sucesor])
+
+    return costo_sucesores
+
+
+#  -----------------------------------------------------------------------------
+
+def get_costos_direccion(costo_sucesores):
+    costo_izq = costo_der = costo_arriba = costo_abajo = 0
+
+    for i in costo_sucesores:
+        sucesor = i[1]
+        if sucesor[1] == 'IZQUIERDA':
+            costo_izq = i[0]
+        elif sucesor[1] == 'DERECHA':
+            costo_der = i[0]
+        elif sucesor[1] == 'ABAJO':
+            costo_abajo = i[0]
+        else:
+            costo_arriba = i[0]
+
+    return costo_izq, costo_der, costo_arriba, costo_abajo
+
+
+#  -----------------------------------------------------------------------------
+
 def a_estrella(matriz, rango_vision, cant_zanahorias):
     pos_actual = calc_pos_conejo(matriz)
     pasos_actuales = 0
@@ -172,18 +225,9 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
 
         # Creamos una lista donde agregamos el calculo del heuristico
         # para cada sucesor, obteniendo [[costo_heuristico, sucesor],...]
-        costo_sucesores = []
-
         # Calculamos el heuristico para cada estado sucesor
-        for sucesor in sucesores:
-            if len(zanahorias) > 0:
-                heuristicos = calc_heuristico(sucesor[0], zanahorias)
-                costo_heuristico = calc_heuristico_min(heuristicos)
-            else:
-                costo_heuristico = 999
-
-            costo_total = pasos_actuales + costo_heuristico
-            costo_sucesores.append([costo_total, sucesor])
+        costo_sucesores = \
+            calcular_heuristicos(sucesores, zanahorias, pasos_actuales)
 
         # Calculamos cual de todos es el mejor sucesor
         mejor_sucesor = calc_mejor_sucesor(costo_sucesores)
@@ -204,21 +248,8 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
         pasos_actuales += 1
 
         # Imprimimos los pasos ejecutados por el conejo
-        costo_izq = 0
-        costo_der = 0
-        costo_arriba = 0
-        costo_abajo = 0
-
-        for i in costo_sucesores:
-            sucesor = i[1]
-            if sucesor[1] == 'IZQUIERDA':
-                costo_izq = i[0]
-            elif sucesor[1] == 'DERECHA':
-                costo_der = i[0]
-            elif sucesor[1] == 'ABAJO':
-                costo_abajo = i[0]
-            else:
-                costo_arriba = i[0]
+        costo_izq, costo_der, costo_arriba, costo_abajo = \
+            get_costos_direccion(costo_sucesores)
 
         mejor_movimiento = mejor_sucesor[1][1]
         print('PASO: %s '
@@ -281,5 +312,15 @@ pos_actual = [2, 2]
 print('Estado Actual:\t', pos_actual)
 print('Estados Sucesores:\n', estados_sucesores(pos_actual))
 
+print('\n---------- SPLIT HORIZONTAL ----------\n')
+m1, m2 = split_horizontal_matriz(test_matrix, pos_actual)
+print('MatrizArriba:\n', m1)
+print('MatrizAbajo:\n', m2)
+
+print('\n---------- SPLIT VERTICAL ----------\n')
+m1, m2 = split_vertical_matriz(test_matrix, pos_actual)
+print('MatrizI<q:\n', m1)
+print('MatrizDer:\n', m2)
+
 print('\n---------- FUNCION A ESTRELLA ----------\n')
-a_estrella(test_matrix, 2, 1)
+a_estrella(test_matrix, 2, 5)
