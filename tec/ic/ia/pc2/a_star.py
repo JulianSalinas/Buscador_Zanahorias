@@ -4,7 +4,7 @@ import numpy as np
 
 # -----------------------------------------------------------------------------
 
-def calc_heuristico(pos, metas):
+def calc_distancia_lineal(pos, metas):
     distancias = queue.PriorityQueue()
 
     for meta in metas:
@@ -163,25 +163,72 @@ def split_horizontal_matriz(matriz, pos_actual):
 # -----------------------------------------------------------------------------
 
 def split_vertical_matriz(matriz, pos_actual):
-    matriz_1 = matriz[:, :pos_actual[0]]
-    matriz_2 = matriz[:, pos_actual[0]:]
+    matriz_1 = matriz[:, :pos_actual[1]]
+    matriz_2 = matriz[:, pos_actual[1]:]
     return matriz_1, matriz_2
 
 
 # -----------------------------------------------------------------------------
 
-def calcular_heuristicos(sucesores, zanahorias, pasos_actuales):
+def castigar_distancia(sucesores, zanahorias, pasos_actuales):
     costo_sucesores = []
 
     for sucesor in sucesores:
         if len(zanahorias) > 0:
-            heuristicos = calc_heuristico(sucesor[0], zanahorias)
+            # Determinamos pesos segun la distancia lineal
+            heuristicos = calc_distancia_lineal(sucesor[0], zanahorias)
             costo_heuristico = calc_heuristico_min(heuristicos)
         else:
-            costo_heuristico = 999
+            costo_heuristico = 90
 
         costo_total = pasos_actuales + costo_heuristico
         costo_sucesores.append([costo_total, sucesor])
+
+    return costo_sucesores
+
+
+# -----------------------------------------------------------------------------
+
+def castigar_emisferios(matriz, costo_sucesores, pos_actual):
+    m_izq, m_der = split_vertical_matriz(matriz, pos_actual)
+    m_arriba, m_abajo = split_horizontal_matriz(matriz, pos_actual)
+
+    zanahorias_izq = calc_pos_simbolo(m_izq, 'Z')
+    zanahorias_der = calc_pos_simbolo(m_der, 'Z')
+    zanahorias_abajo = calc_pos_simbolo(m_abajo, 'Z')
+    zanahorias_arriba = calc_pos_simbolo(m_arriba, 'Z')
+
+    for i in costo_sucesores:
+        dir_sucesor = i[1][1]
+        if dir_sucesor == 'IZQUIERDA':
+            if len(zanahorias_izq) < len(zanahorias_der):
+                i[0] += 10
+        elif dir_sucesor == 'DERECHA':
+            if len(zanahorias_der) < len(zanahorias_izq):
+                i[0] += 10
+        elif dir_sucesor == 'ABAJO':
+            if len(zanahorias_abajo) < len(zanahorias_arriba):
+                i[0] += 10
+        else:
+            if len(zanahorias_arriba) < len(zanahorias_abajo):
+                i[0] += 10
+
+    return costo_sucesores
+
+
+# -----------------------------------------------------------------------------
+
+def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
+                        pos_actual, rango_vision):
+    # Obtenemos una submatriz con el rango de vision del conejo
+    matriz_visible = calc_submatriz(matriz, pos_actual, rango_vision)
+
+    # Castigamos segun la distancia lineal a las zanahorias
+    costo_sucesores = castigar_distancia(sucesores, zanahorias, pasos_actuales)
+
+    # Castigamos segun la region que tenga mas zanahorias
+    costo_sucesores = castigar_emisferios(matriz_visible, costo_sucesores,
+                                          pos_actual)
 
     return costo_sucesores
 
@@ -213,21 +260,18 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
 
     while cant_zanahorias > 0:
 
-        # Obtenemos una submatriz con el rango de vision del conejo
-        # matriz_visible = calc_submatriz(matriz, pos_actual, rango_vision)
-
         # Calculamos los estados a los que se puede desplazar el conejo
         sucesores = estados_sucesores(pos_actual)
 
         # Buscamos si hay zanahorias en el rango de vision
-        # zanahorias = calc_pos_simbolo(matriz_visible, 'Z')
         zanahorias = delimitar_rango_vision(matriz, pos_actual, rango_vision)
 
         # Creamos una lista donde agregamos el calculo del heuristico
         # para cada sucesor, obteniendo [[costo_heuristico, sucesor],...]
         # Calculamos el heuristico para cada estado sucesor
         costo_sucesores = \
-            calcular_heuristicos(sucesores, zanahorias, pasos_actuales)
+            calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
+                                pos_actual, rango_vision)
 
         # Calculamos cual de todos es el mejor sucesor
         mejor_sucesor = calc_mejor_sucesor(costo_sucesores)
@@ -253,9 +297,9 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
 
         mejor_movimiento = mejor_sucesor[1][1]
         print('PASO: %s '
-              'IZQUIERDA: %d  DERECHA: %d  ARRIBA: %d  ABAJO: %d MOVIMIENTO: %s'
-              % (str(pasos_actuales).zfill(5), costo_izq, costo_der,
-                 costo_arriba, costo_abajo, mejor_movimiento))
+              'IZQUIERDA: %d  DERECHA: %d  ARRIBA: %d  ABAJO: %d MOVIMIENTO: '
+              '%s ' % (str(pasos_actuales).zfill(5), costo_izq, costo_der,
+                       costo_arriba, costo_abajo, mejor_movimiento))
 
     print('PASO: %s FINAL' % (str(pasos_actuales).zfill(5)))
 
@@ -278,7 +322,7 @@ matriz2 = np.arange(50).reshape(5, 10)
 test_matrix = np.matrix(test_matrix)
 
 print('---------- Heuristicos ----------')
-distancias = calc_heuristico([1, 2], [[0, 3], [3, 0], [3, 1]])
+distancias = calc_distancia_lineal([1, 2], [[0, 3], [3, 0], [3, 1]])
 print('Heuristico min:\t', calc_heuristico_min(distancias))
 for i in range(distancias.qsize()):
     x = distancias.get()
@@ -323,4 +367,4 @@ print('MatrizI<q:\n', m1)
 print('MatrizDer:\n', m2)
 
 print('\n---------- FUNCION A ESTRELLA ----------\n')
-a_estrella(test_matrix, 2, 5)
+a_estrella(test_matrix, 5, 5)
