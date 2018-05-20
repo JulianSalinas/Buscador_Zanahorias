@@ -1,4 +1,3 @@
-
 import numpy as np
 from random import randint, shuffle, seed
 
@@ -9,6 +8,7 @@ class Gen:
     :var gen_array: numpy array con los contenidos del tablero
     :var score: puntaje fitness del gen
     """
+
     def __init__(self, array, score=0):
         self.gen_array = array
         self.score = score
@@ -35,10 +35,14 @@ def weights():
         's': -1,
         'af': -5,
         'anf': -10,
-        'apc': 50,
+        'apc': 15,
         '180°t': -1000
     }
     return _weights
+
+
+def gen_in_list(gen, gen_list):
+    return any((gen.get_array() == g.get_array()).all() for g in gen_list)
 
 
 def direction_to_arrow(direction):
@@ -144,20 +148,19 @@ def arrows_pointing_to_carrots(board, carrot_positions):
             board[:, col][:row].flatten().tolist()[0][::-1], 'V'
         )
         arrow_count += arrow_count_in_subpath(
-            board[:, col][row+1:].flatten().tolist(), 'A'
+            board[:, col][row + 1:].flatten().tolist(), 'A'
         )
         arrow_count += arrow_count_in_subpath(
             board[row, :col].flatten().tolist()[::-1], '>'
         )
         arrow_count += arrow_count_in_subpath(
-            board[row, col+1:].flatten().tolist(), '<'
+            board[row, col + 1:].flatten().tolist(), '<'
         )
 
     return arrow_count
 
 
 def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape):
-
     def move_up():
         nonlocal row
         row -= 1
@@ -353,22 +356,28 @@ def generate(parents, selection_type, direction, mat_shape,
         shuffle(index_list)
 
         for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
-            resulting_generation += get_children(parents[gen1_idx],
-                                                 parents[gen2_idx],
-                                                 cross_type,
-                                                 direction,
-                                                 mat_shape,
-                                                 mutation_chance)
+            children = get_children(parents[gen1_idx],
+                                    parents[gen2_idx],
+                                    cross_type,
+                                    direction,
+                                    mat_shape,
+                                    mutation_chance)
+            for child in children:
+                if not gen_in_list(child, resulting_generation):
+                    resulting_generation.append(child)
 
     elif selection_type == 2:
-        _range = range(0, int(len(resulting_generation)/2))
+        _range = range(0, int(len(resulting_generation) / 2))
         for i in _range:
-            resulting_generation += get_children(parents[i*2],
-                                                 parents[i*2+1],
-                                                 cross_type,
-                                                 direction,
-                                                 mat_shape,
-                                                 mutation_chance)
+            children += get_children(parents[i * 2],
+                                     parents[i * 2 + 1],
+                                     cross_type,
+                                     direction,
+                                     mat_shape,
+                                     mutation_chance)
+            for child in children:
+                if not gen_in_list(child, resulting_generation):
+                    resulting_generation.append(child)
 
     return resulting_generation
 
@@ -388,7 +397,6 @@ def replacement(generation, individuals):
 def run_carrot_finder(initial_direction, individuals, max_generations,
                       mutation_chance, initial_board, selection_type=1,
                       cross_type=1):
-
     initial_direction = direction_to_arrow(initial_direction)
 
     # Definición de la población inicial
@@ -396,7 +404,7 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
                                             individuals=individuals,
                                             direction=initial_direction)
 
-    for generation_number in range(1, max_generations+1):
+    for generation_number in range(1, max_generations + 1):
 
         # Se obtiene la generación completa sin ordenar
         generation = generate(parents=generation,
@@ -409,36 +417,45 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
         # Se seleccionan los mejores
         generation = replacement(generation, individuals)
 
+        global optimal_origin_generation
+        global current_best_score
+        if generation[0].get_score() > current_best_score:
+            optimal_origin_generation = generation_number
+            current_best_score = generation[0].get_score()
+
     return generation
 
 
+optimal_origin_generation = 0
+current_best_score = -250
+
 starting_board = [
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'C', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
 
-optimals = run_carrot_finder(initial_direction='arriba',
-                             individuals=20,
-                             max_generations=300,
-                             mutation_chance=30,
-                             initial_board=starting_board,
-                             selection_type=1,
-                             cross_type=1)
+optimal = run_carrot_finder(initial_direction='derecha',
+                            individuals=10,
+                            max_generations=300,
+                            mutation_chance=80,
+                            initial_board=starting_board,
+                            selection_type=1,
+                            cross_type=1)[0]
 
-for optimal in optimals:
-    print(optimal.get_score())
-    print(optimal.get_array().reshape(starting_board.shape))
-    print('_______________________________________________________________')
+print(optimal.get_score())
+print(optimal.get_array().reshape(starting_board.shape))
+
+print(optimal_origin_generation)
