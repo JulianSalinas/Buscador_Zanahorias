@@ -234,8 +234,37 @@ def castigar_esp_desconocido(costo_sucesores, forma_matriz):
 
 # -----------------------------------------------------------------------------
 
+def direccion_padre(direccion):
+    if direccion == 'IZQUIERDA':
+        dir_padre = 'DERECHA'
+    elif direccion == 'DERECHA':
+        dir_padre = 'IZQUIERDA'
+    elif direccion == 'ABAJO':
+        dir_padre = 'ARRIBA'
+    else:
+        dir_padre = 'ABAJO'
+
+    return dir_padre
+
+
+# -----------------------------------------------------------------------------
+
+def castigar_direccion_padre(costo_sucesores, direccion_vieja):
+
+    if len(direccion_vieja) > 0 and direccion_vieja[0]:
+        dir = direccion_padre(direccion_vieja[1])
+
+        for i in costo_sucesores:
+            if i[1][1] == dir:
+                i[0] += 50
+
+    return costo_sucesores
+
+
+# -----------------------------------------------------------------------------
+
 def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
-                        pos_actual, rango_vision):
+                        pos_actual, rango_vision, direccion_vieja):
     # Obtenemos una submatriz con el rango de vision del conejo
     matriz_visible = calc_submatriz(matriz, pos_actual, rango_vision)
 
@@ -252,6 +281,10 @@ def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
 
     # Castigamos si el sucesor va a un espacio desconocido
     costo_sucesores = castigar_esp_desconocido(costo_sucesores, forma_matriz)
+
+    # Castigamos la direccion padre si en la misma no existia zanahoria
+    costo_sucesores = castigar_direccion_padre(costo_sucesores,
+                                               direccion_vieja)
 
     return costo_sucesores
 
@@ -280,7 +313,7 @@ def get_costos_direccion(costo_sucesores):
 def a_estrella(matriz, rango_vision, cant_zanahorias):
     pos_actual = calc_pos_conejo(matriz)
     pasos_actuales = 0
-
+    direccion_vieja = []
     while cant_zanahorias > 0:
 
         # Calculamos los estados a los que se puede desplazar el conejo
@@ -294,7 +327,7 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
         # Calculamos el heuristico para cada estado sucesor
         costo_sucesores = \
             calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
-                                pos_actual, rango_vision)
+                                pos_actual, rango_vision, direccion_vieja)
 
         # Calculamos cual de todos es el mejor sucesor
         mejor_sucesor = calc_mejor_sucesor(costo_sucesores)
@@ -304,6 +337,9 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
         # si es asi se resta una zanahoria como comida
         if verificar_meta(matriz, pos_nueva):
             cant_zanahorias -= 1
+            direccion_vieja = [False, mejor_sucesor[1][1]]
+        else:
+            direccion_vieja = [True, mejor_sucesor[1][1]]
 
         # Desplazamos el conejo hacia la mejor direccion en el tablero
         desplazar_conejo(matriz, pos_actual, pos_nueva)
