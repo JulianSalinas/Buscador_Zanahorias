@@ -5,6 +5,18 @@ import numpy as np
 # -----------------------------------------------------------------------------
 
 def calc_distancia_lineal(pos, metas):
+    """
+    Funcion utlizada para asignar pesos al heuristico por medio de la distancia
+    lineal entre una posicion determinada y el conjunto de objetivos meta
+
+    :param pos: Es la posicion en la que se encuentra el conejo, representada
+    como un arreglo [x, y]
+    :param metas: lista con el conjunto de posiciones de las zanahorias
+    de la forma [[x1, y1], ..., [Xn, Yn]]
+    :return: lista de prioridad con las distancias del conejo hacia cada una de
+    las zanahorias
+    """
+
     distancias = queue.PriorityQueue()
 
     for meta in metas:
@@ -17,6 +29,19 @@ def calc_distancia_lineal(pos, metas):
 # -----------------------------------------------------------------------------
 
 def calc_submatriz(matriz, pos_actual, rango_vision):
+    """
+    Funcion utilizada para el calculo de una submatriz que representa el rango
+    de vision que tiene el conejo
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param pos_actual: posicion del conejo en el tablero, de la forma [x, y]
+    :param rango_vision: es un numero que representa la cantidad de casillas
+    que el conejo puede visualizar a su alrededor
+    :return: sub matriz con n filas y m columnas, representando el rango
+    de vision del conejo
+    """
+
     matriz = np.matrix(matriz)
     n_cols = matriz.shape[1]
     n_filas = matriz.shape[0]
@@ -35,6 +60,20 @@ def calc_submatriz(matriz, pos_actual, rango_vision):
 # -----------------------------------------------------------------------------
 
 def calc_pos_simbolo(matriz, simbolo):
+    """
+    Funcion empleada para determinar las posiciones de un determinado simbolo
+    dentro de una matriz
+    En este caso, se utiliza para determinar donde se encuentra el conejo, y
+    tambien para saber donde estan las zanahorias
+
+    :param matriz:  es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param simbolo: letra que se buscara dentro de la matriz, en el caso de las
+    zanahorias seria la 'Z' y del conejo seria la 'C'
+    :return: lista con el conjunto de posiciones del simbolo dentro
+    de la matriz
+    """
+
     indices = []
     arreglo_indices = np.nonzero(matriz == simbolo)
     if len(arreglo_indices) > 0:
@@ -51,6 +90,23 @@ def calc_pos_simbolo(matriz, simbolo):
 
 def desplazar_conejo(matriz, pos_vieja, pos_nueva, simbolo_vacio=' ',
                      simbolo_conejo='C'):
+    """
+    Funcion utilizada para desplazar el conejo dentro del tablero y hacer que
+    se coma una zanahoria si es que encuentra una
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param pos_vieja: arreglo de la forma [x, y], representando la posicion
+    vieja del conejo
+    :param pos_nueva: arreglo de la forma [x, y], representando la posicion
+    que debera ocupar el conejo dentro de la matriz
+    :param simbolo_vacio: simbolo que sera asignado al espacio desocupado por
+    el conejo
+    :param simbolo_conejo: simbolo que sera asignado al nuevo espacio ocupado
+    por el conejo
+    :return: matriz actualizada con el simbolo del conejo desplazado
+    """
+
     pos_x = pos_vieja[0]
     pos_y = pos_vieja[1]
     matriz[pos_x, pos_y] = simbolo_vacio
@@ -65,6 +121,17 @@ def desplazar_conejo(matriz, pos_vieja, pos_nueva, simbolo_vacio=' ',
 # -----------------------------------------------------------------------------
 
 def calc_pos_conejo(matriz, simbolo_conejo='C'):
+    """
+    Funcion utilizada para determinar en que posicion [x, y] se encuentra el
+    conejo dentro de la matriz
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param simbolo_conejo: es el simbolo que tiene el conejo
+    dentro de la matriz
+    :return: posicion [x, y] del conejo dentro de la matriz
+    """
+    
     pos = []
     indices = calc_pos_simbolo(matriz, simbolo_conejo)
 
@@ -77,6 +144,15 @@ def calc_pos_conejo(matriz, simbolo_conejo='C'):
 # -----------------------------------------------------------------------------
 
 def estados_sucesores(estado_actual):
+    """
+    Funcion utilizada para calcular el conjunto de direcciones a las que se
+    puede desplazar el conejo Izq, Der, Top, Down
+
+    :param estado_actual: posicion [x, y] en la que se encuentra el conejo
+    :return: lista con el conjunto de direcciones a las que se puede desplazar
+    el conejo
+    """
+
     izq = [[estado_actual[0], estado_actual[1] - 1], 'IZQUIERDA']
     der = [[estado_actual[0], estado_actual[1] + 1], 'DERECHA']
     arriba = [[estado_actual[0] - 1, estado_actual[1]], 'ARRIBA']
@@ -89,7 +165,15 @@ def estados_sucesores(estado_actual):
 # -----------------------------------------------------------------------------
 
 def calc_heuristico_min(heuristicos):
-    costo = 9999
+    """
+    Funcion utilizada para calcular cual de todos los heuristicos es el mejor
+
+    :param heuristicos: conjunto de valores que fueron determinados y sobre
+    los que se determinara el mejor costo
+    :return: valor del mejor costo
+    """
+
+    costo = 50
 
     if heuristicos.qsize() > 0:
         mejor_valor = heuristicos.get()
@@ -101,6 +185,16 @@ def calc_heuristico_min(heuristicos):
 # -----------------------------------------------------------------------------
 
 def calc_mejor_sucesor(sucesores):
+    """
+    Funcion utilizada para determinar cual de todas las direcciones
+    posibles es la mejor para hacer que el conejo de desplace
+
+    :param sucesores: Conjunto de direcciones posibles a las que se puede
+    desplazar el conejo
+    :return: Mejor sucesor del conjunto de sucesores, indicando el costo, la
+    etiqueta de direccion y la posicion a la que se debe desplazar
+    """
+
     mejor_sucesor = sucesores[0]
     for sucesor in sucesores:
         costo_sucesor = sucesor[0]
@@ -117,6 +211,19 @@ def calc_mejor_sucesor(sucesores):
 # -----------------------------------------------------------------------------
 
 def verificar_meta(matriz, posicion, meta='Z'):
+    """
+    Verifica si dada una posicion, el conejo llego o no a la meta, que seria
+    basicamente localizar una zanahoria dentro del tablero
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param posicion: es un arreglo de la forma [x, y] que indica la posicion
+    en la que se encuentra el conejo
+    :param meta: es el caracter que se desea encontrar, o que indica que se
+    llego a una meta
+    :return: valor booleano indicando si encontro o no una zanahoria
+    """
+
     eje_x = posicion[0]
     eje_y = posicion[1]
 
@@ -129,6 +236,16 @@ def verificar_meta(matriz, posicion, meta='Z'):
 # -----------------------------------------------------------------------------
 
 def eliminar_sucesor_viejo(sucesores, sucesor_viejo):
+    """
+    Funcion utilizada para borrar un sucesor viejo del conjunto de sucesores
+    que puede tener una detemrinada posicion
+
+    :param sucesores: conjunto de direcciones a las que se puede
+    dirigir el conejo
+    :param sucesor_viejo: es el sucesor del cual provenia el conejo
+    :return: conjunto de sucesores sin el sucesor viejo
+    """
+
     sucesores = sucesores.tolist()
     if sucesor_viejo in sucesores:
         sucesores.remove(sucesor_viejo)
@@ -141,6 +258,19 @@ def eliminar_sucesor_viejo(sucesores, sucesor_viejo):
 # -----------------------------------------------------------------------------
 
 def delimitar_rango_vision(matriz, pos_actual, rango_vision):
+    """
+    Elimina el conjunto de zanahorias que se encuentran fuera del rango de
+    vision, esto para evitar que sean tomadas en cuenta
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param pos_actual: posicion [x, y] en la que se encuentra el conejo
+    :param rango_vision: es un numero que indica la cantidad de casillas
+    que puede ver el conejo a su alrededor
+    :return: conjunto de zanahorias que se encuentran dentro del
+    rango de vision
+    """
+
     zanahorias = calc_pos_simbolo(matriz, 'Z')
     zanahorias_res = []
 
@@ -157,6 +287,17 @@ def delimitar_rango_vision(matriz, pos_actual, rango_vision):
 # -----------------------------------------------------------------------------
 
 def split_horizontal_matriz(matriz, pos_actual):
+    """
+    Funcion utilizada para partir la matriz o tablero en dos secciones, arriba
+    y abajo
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param pos_actual: posicion [x, y] en la que se encuentra el conejo
+    :return: matriz superior e inferior, detemrinadas por un split de la matriz
+    en la posicion en la que se encuentra el conejo
+    """
+
     matriz_1 = matriz[:pos_actual[0], :]
     matriz_2 = matriz[pos_actual[0]:, :]
     return matriz_1, matriz_2
@@ -165,6 +306,17 @@ def split_horizontal_matriz(matriz, pos_actual):
 # -----------------------------------------------------------------------------
 
 def split_vertical_matriz(matriz, pos_actual):
+    """
+    Funcion utilizada para partir la matriz o tablero en dos secciones, derecha
+    e izquierda
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param pos_actual: posicion [x, y] en la que se encuentra el conejo
+    :return: matriz izquierda y derecha, detemrinadas por un split de la matriz
+    en la posicion en la que se encuentra el conejo
+    """
+
     matriz_1 = matriz[:, :pos_actual[1]]
     matriz_2 = matriz[:, pos_actual[1]:]
     return matriz_1, matriz_2
@@ -173,6 +325,19 @@ def split_vertical_matriz(matriz, pos_actual):
 # -----------------------------------------------------------------------------
 
 def castigar_distancia(sucesores, zanahorias, pasos_actuales):
+    """
+    Funcion utilizada por el heuirstico para colocar un peso a cada direccion
+    segun la distancia lineal de una posicion hacia la meta
+
+    :param sucesores: es el conjunto de direcciones a las que puede desplazarse
+    el conejo desde su posicion actual
+    :param zanahorias: es una lista con el conjunto [x, y] de cada zanahoria
+    dentro del rango de vision
+    :param pasos_actuales: es la cantidad de pasos que ha dado el conejo
+    :return: costo de cada uno de los posibles sucesores, con su respectiva
+    posicion y etiqueta de direccion
+    """
+
     costo_sucesores = []
 
     for sucesor in sucesores:
@@ -192,6 +357,20 @@ def castigar_distancia(sucesores, zanahorias, pasos_actuales):
 # -----------------------------------------------------------------------------
 
 def castigar_emisferios(matriz, costo_sucesores, pos_actual):
+    """
+    Funcion utilizada para castigar las direcciones donde se encuentran menos
+    zanahorias
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param costo_sucesores: costo de cada uno de los posibles sucesores,
+    con su respectiva posicion y etiqueta de direccion
+    :param pos_actual: posicion que ocupa el conejo actualmente, es decir,
+    antes de que se desplace
+    :return: costo de cada uno de los posibles sucesores, con su respectiva
+    posicion y etiqueta de direccion
+    """
+
     m_izq, m_der = split_vertical_matriz(matriz, pos_actual)
     m_arriba, m_abajo = split_horizontal_matriz(matriz, pos_actual)
 
@@ -221,6 +400,17 @@ def castigar_emisferios(matriz, costo_sucesores, pos_actual):
 # -----------------------------------------------------------------------------
 
 def castigar_esp_desconocido(costo_sucesores, forma_matriz):
+    """
+    Funcion utilizada para castigar los sucesores/direcciones que van a un
+    espacio desconocido del tablero, es decir, que se intentan salir.
+
+    :param costo_sucesores: costo de cada uno de los posibles sucesores,
+    con su respectiva posicion y etiqueta de direccion
+    :param forma_matriz: es el .shape del tablero, misma que indica las
+    dimensiones que tiene el tablero
+    :return: costo de cada uno de los posibles sucesores, con su respectiva
+    posicion y etiqueta de direccion
+    """
 
     for i in costo_sucesores:
         posicion = i[1][0]
@@ -234,6 +424,15 @@ def castigar_esp_desconocido(costo_sucesores, forma_matriz):
 # -----------------------------------------------------------------------------
 
 def direccion_padre(direccion):
+    """
+    Determinar cual direccion es la del padre, en otras palabras, de cual
+    provenia el conejo
+
+    :param direccion: es la etiqueta con la direccion que llevo al conejo
+    a estar donde se encuentra actualmente
+    :return: direccion hacia el padre (la opuesta)
+    """
+
     if direccion == 'IZQUIERDA':
         dir_padre = 'DERECHA'
     elif direccion == 'DERECHA':
@@ -249,6 +448,18 @@ def direccion_padre(direccion):
 # -----------------------------------------------------------------------------
 
 def castigar_direccion_padre(costo_sucesores, direccion_vieja):
+    """
+    Funcion utilizada para calcular el heuristico, misma que se encarga de
+    colocar un costo al sucesor que dirige hacia el padre, esto si en la
+    posicion no existian zanahorias
+
+    :param costo_sucesores: costo de cada uno de los posibles sucesores,
+    con su respectiva posicion y etiqueta de direccion
+    :param direccion_vieja: es la etiqueta con la direccion que llevo al conejo
+    a estar donde se encuentra actualmente
+    :return: costo de cada uno de los posibles sucesores, con su respectiva
+    posicion y etiqueta de direccion luego de penalizar por direccion del padre
+    """
 
     if len(direccion_vieja) > 0 and direccion_vieja[0]:
         direccion = direccion_padre(direccion_vieja[1])
@@ -264,6 +475,27 @@ def castigar_direccion_padre(costo_sucesores, direccion_vieja):
 
 def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
                         pos_actual, rango_vision, direccion_vieja):
+    """
+    Funcion utilizada para determinar el heuristico de un determinado
+    movimiento, aplicando los diferentes tipos de castigo a cada direccion
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param sucesores: Conjunto de direcciones posibles a las que se puede
+    desplazar el conejo
+    :param zanahorias: es una lista con el conjunto [x, y] de cada zanahoria
+    dentro del rango de vision
+    :param pasos_actuales: es un numero que indica el costo acumulado hasta el
+    momento, es decir la funcion g(n)
+    :param pos_actual: posicion del conejo en el tablero, de la forma [x, y]
+    :param rango_vision: es un numero que indica la cantidad de casillas
+    que puede ver el conejo a su alrededor
+    :param direccion_vieja: es la etiqueta con la direccion que llevo al conejo
+    a estar donde se encuentra actualmente
+    :return: costo de cada uno de los posibles sucesores, con su respectiva
+    posicion y etiqueta de direccion luego de penalizar por direccion
+    """
+
     # Obtenemos una submatriz con el rango de vision del conejo
     matriz_visible = calc_submatriz(matriz, pos_actual, rango_vision)
 
@@ -291,6 +523,16 @@ def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
 #  -----------------------------------------------------------------------------
 
 def get_costos_direccion(costo_sucesores):
+    """
+    Funcion utilizada para extraer del arreglo de costos,
+    cada uno de los mismo segun la direccion
+
+    :param costo_sucesores: costo de cada uno de los posibles sucesores,
+    con su respectiva posicion y etiqueta de direccion
+    :return: costo de cada una de las posibles direcciones que puede tomar el
+    conejo
+    """
+
     costo_izq = costo_der = costo_arriba = costo_abajo = 0
 
     for i in costo_sucesores:
@@ -310,6 +552,20 @@ def get_costos_direccion(costo_sucesores):
 #  -----------------------------------------------------------------------------
 
 def a_estrella(matriz, rango_vision, cant_zanahorias):
+    """
+    Funcion principal del algoritmo A*, que recibe el tablero, el rango de
+    vision y la cantidad de zanahorias meta, y con ello desplaza el conejo para
+    lograr el objetivo de comerse todas las zanahorias
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param rango_vision: es un numero que indica la cantidad de casillas
+    que puede ver el conejo a su alrededor
+    :param cant_zanahorias: es un numero que indica cuantas zanahorias debera
+    comerse el conejo para darse por satisfecho
+    :return: No existe retorno
+    """
+
     pos_actual = calc_pos_conejo(matriz)
     pasos_actuales = 0
     direccion_vieja = []
