@@ -35,7 +35,7 @@ def weights():
     # ['bfc'] = best first carrot         (una flecha inicial idónea)
 
     _weights = {
-        'pc': 5000,
+        'pc': 10000,
         'f': -2500,
         's': -1,
         'af': -5,
@@ -233,10 +233,10 @@ def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape,
     steps = 0
     arrows_found = 0
     _180_degree_turns = 0
-    last_cell = ' '
 
     arrow_symbols = ['<', '>', 'A', 'V']
     opposite_direction = {'A': 'V', 'V': 'A', '>': '<', '<': '>'}
+    last_cell = 'C'
 
     is_first_carrot = True
     first_carrot_is_optimal = 0
@@ -260,8 +260,9 @@ def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape,
 
             elif cell_content in arrow_symbols:
                 # Revisar los giros en 180 grados
-                if opposite_direction[direction] is cell_content:
-                    _180_degree_turns += 1
+                if cell_content is opposite_direction[direction]:
+                    if last_cell is not 'Z':
+                        _180_degree_turns += 1
                 arrows_found += 1
                 direction = cell_content
                 board[row][col] = ' '
@@ -294,7 +295,7 @@ def eval_fitness(gen, direction, mat_shape):
                                                           carrot_positions,
                                                           row, col)
 
-    carrot_count = len(carrot_positions)
+    carrot_count = len(carrot_positions[0])
     arrow_count = np.count_nonzero(temp != ' ') - carrot_count - 1
 
     results = walk_rabbit_path(board=temp, direction=direction,
@@ -320,7 +321,7 @@ def eval_fitness(gen, direction, mat_shape):
     _180dtw = _180_degree_turns * weights()['180°t']
     bfcw = first_carrot_is_optimal * weights()['bfc']
 
-    score = pcw + fw + sw + afw + anfw + apcw + bfcw
+    score = pcw + fw + sw + afw + anfw + apcw + _180dtw + bfcw
 
     gen.set_score(score)
 
@@ -504,13 +505,13 @@ starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
 seed(11)
 optimal = run_carrot_finder(initial_direction='izquierda',
-                            individuals=15,
-                            max_generations=500,
+                            individuals=10,
+                            max_generations=800,
                             mutation_chance=80,
                             initial_board=starting_board,
                             selection_type=1,
