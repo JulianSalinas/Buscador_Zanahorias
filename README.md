@@ -266,13 +266,25 @@ implementadas en la función.
     Finalmente, para cada uno de estos se calcula cuál región tiene más zanahorias,
     y se castiga la dirección opuesta.
     
-    **NOTA:** El costo agregado a la dirección con menos zanahorias es de 3. 
-
+    **NOTA:** El costo agregado a la dirección con menos zanahorias es de **3**. 
 
 3. Aplicación de un costo si el sucesor va a un espacio desconocido
     
+    Este costo es agregado al sucesor que se dirija hacia una posición fuera del tablero 
+    de juego. 
+    
+    A continuación se muestra el llamado a la función
+    que se encuentra en el código para el cálculo del heurístico.
+    
         costo_sucesores = castigar_esp_desconocido(costo_sucesores, forma_matriz)
-
+    
+    Un ejemplo de esto es el costo que se le agrega a la dirección 'Abajo', en el caso 
+    de la siguiente imagen:
+    
+    ![tablero4](/imgs/a_estrella/tablero6.PNG "Tablero espacio desconocido")
+    
+    **NOTA:** El costo agregado para esta penalización es de **100**.
+    
 4. Aplicación de un costo a la dirección del padre, si en la misma no existía zanahoria
     
         costo_sucesores = castigar_direccion_padre(costo_sucesores,
