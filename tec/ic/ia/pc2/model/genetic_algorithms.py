@@ -6,7 +6,7 @@ from math import ceil
 class Gen:
     """
     'Escructura' para manejar cada gen
-    :var gen_array: numpy array con los contenidos del tablero
+    :var array: numpy array con los contenidos del tablero
     :var score: puntaje fitness del gen
     """
 
