@@ -90,7 +90,9 @@ class TestGeneticAlgorithms(TestCase):
         """
         :return: Sin retorno
         """
-        gen = Gen(np.array([' ', ' ', 'C', ' ', ' ', ' ', 'Z', 'Z', ' '],
+        gen = Gen(np.array([' ', ' ', 'C',
+                            ' ', ' ', ' ',
+                            'Z', 'Z', ' '],
                            dtype=object))
 
         seed(1)
@@ -105,9 +107,26 @@ class TestGeneticAlgorithms(TestCase):
         real_results.append(mutation2.get_array().tolist())
 
         expected_results = list()
-        expected_results.append([' ', 'A', 'C', ' ', ' ', ' ', 'Z', 'Z', ' '])
-        expected_results.append([' ', '<', 'C', ' ', ' ', ' ', 'Z', 'Z', ' '])
+        expected_results.append([' ', 'A', 'C',
+                                 ' ', ' ', ' ',
+                                 'Z', 'Z', ' '])
+        expected_results.append([' ', '<', 'C',
+                                 ' ', ' ', ' ',
+                                 'Z', 'Z', ' '])
 
         self.assertEqual(real_results, expected_results)
 
         seed(time())
+
+    def test_eval_fitness(self):
+        """
+        :return: Sin retorno
+        """
+        gen = Gen(np.array([' ', 'V', 'C',
+                            ' ', 'Z', ' ',
+                            'Z', '<', ' '],
+                           dtype=object))
+
+        score = eval_fitness(gen, '<', (3, 3))
+
+        self.assertEqual(score, 11506)
