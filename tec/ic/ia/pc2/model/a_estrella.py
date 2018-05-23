@@ -383,16 +383,16 @@ def castigar_emisferios(matriz, costo_sucesores, pos_actual):
         dir_sucesor = i[1][1]
         if dir_sucesor == 'IZQUIERDA':
             if len(zanahorias_izq) < len(zanahorias_der):
-                i[0] += 10
+                i[0] += 3
         elif dir_sucesor == 'DERECHA':
             if len(zanahorias_der) < len(zanahorias_izq):
-                i[0] += 10
+                i[0] += 3
         elif dir_sucesor == 'ABAJO':
             if len(zanahorias_abajo) < len(zanahorias_arriba):
-                i[0] += 10
+                i[0] += 3
         else:
             if len(zanahorias_arriba) < len(zanahorias_abajo):
-                i[0] += 10
+                i[0] += 3
 
     return costo_sucesores
 
@@ -466,7 +466,7 @@ def castigar_direccion_padre(costo_sucesores, direccion_vieja):
 
         for i in costo_sucesores:
             if i[1][1] == direccion:
-                i[0] += 50
+                i[0] += 10
 
     return costo_sucesores
 
