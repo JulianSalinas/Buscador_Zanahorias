@@ -218,10 +218,10 @@ implementadas en la función.
     Entonces como se puede ver, el conejo podría desplazarse a cuatro posibles direcciones, que serían las
     que están de color azúl.
     
-        Izquierda, en la posición [6, 0]
-        Derecha, en la posición [6, 2]
-        Arriba, en la posición [5, 1]
-        Abajo, en la posición [7, 1]
+        Izquierda,  en la posición [6, 0]
+        Derecha,    en la posición [6, 2]
+        Arriba,     en la posición [5, 1]
+        Abajo,      en la posición [7, 1]
     
     Luego, para cada una de estas se determina la zanahoria más cercana y se calcúla la distancia.
     Nótese que las zanahorias más cercanas para cada dirección, se encuentran señaladas por una flecha.
@@ -235,8 +235,39 @@ implementadas en la función.
 
 2. Aplicación de un costo según la región que tenga más zanahorias
     
+    En este caso, el costo que se le aplica a un sucesor es básicamente si 
+    su dirección cuenta con menos zanahorias que la dirección opuesta.
+    Es decir, que solamente se aplicará un costo a dos direcciones (Izquierda/Derecha y Arriba/Abajo).
+    
+    Además, se debe tener claro que este costo solamente se tomará en cuenta si el numero de
+    zanahorias agrupadas cumplen con la cantidad que el conejo ocupa comerse para darse por satisfecho.
+    Esto último se decidió, debido a que la búsqueda no era tan efectiva si se le daba prioridad a la región con más
+    zanahorias.  
+     
+    A continuación se muestra el llamado a la función
+    que se encuentra en el código para el cálculo del heurístico.
+          
         costo_sucesores = castigar_emisferios(matriz_visible, costo_sucesores,
                                           pos_actual, cant_zanahorias)
+    
+    Para tener claro un ejemplo del cálculo, se debe contemplar cómo se está realizando la comparación
+    entre dos regiones. Esto se logra por medio de un split de la matriz, según la posición que ocupa el conejo.
+    
+    Entonces para penalizar la dirección Izquierda o Derecha se hace un split vertical, tal
+    como se muestra en la siguiente imagen. 
+    
+    ![tablero5](/imgs/a_estrella/tablero5.PNG "Tablero vertical")
+    
+    Luego, para penalizar la dirección Arriba o Abajo se hace un split horizontal, tal
+    como se muestra en la siguiente imagen. 
+    
+    ![tablero4](/imgs/a_estrella/tablero4.PNG "Tablero horizontal")
+    
+    Finalmente, para cada uno de estos se calcula cuál región tiene más zanahorias,
+    y se castiga la dirección opuesta.
+    
+    **NOTA:** El costo agregado a la dirección con menos zanahorias es de 3. 
+
 
 3. Aplicación de un costo si el sucesor va a un espacio desconocido
     
