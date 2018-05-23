@@ -17,8 +17,16 @@ class TestAEstrella(TestCase):
     def test_calc_distancia_lineal(self):
 
         """
-        Entradas:
-        Resultado esperado:
+        Prueba la funcionalidad de distancia lineal, entre un punto y el
+        conjunto de metas a las que se puede dirigir el conejo, que serian las
+        zanahorias que se encuentran dentro del rango de vision
+
+        Entradas: No aplica
+
+        Resultado esperado: Las distancias del punto[1,2] a las zanahorias son:
+            [1,2] - [0,3] = 2
+            [1,2] - [3,0] = 4
+            [1,2] - [3,1] = 3
 
         @return Sin retorno
         """
@@ -43,8 +51,15 @@ class TestAEstrella(TestCase):
     def test_sub_matriz(self):
 
         """
-        Entradas:
-        Resultado esperado:
+        Se encarga de probar la funcionalidad de obtener una submatriz
+        segun el rango de vision que tiene el conejo dentro del tablero.
+
+        Entradas: No aplica
+
+        Resultado esperado: En este caso se prueba con una matriz de 6x7.
+        El conejo se encuentra en la posicion [2,1] y al tener un rango
+        de vision de 1 se espera obtener una submatriz que va desde el punto
+        [1,0] al [3,2]
 
         @return Sin retorno
         """
@@ -76,8 +91,29 @@ class TestAEstrella(TestCase):
     def test_posicion_zanahorias(self):
 
         """
-        Entradas:
+        Se encarga de probar la funcion de extraer posiciones, esto para
+        cada zanahoria que se encuentra en la matriz que ve el conejo en un
+        punto determinado.
+        Es decir, si en la matriz se encuentran tres zanahorias, las mismas
+        deberian retornarse como una lista con valores [x,y] que representan
+        la posicion de cada una de estas.
+
+        Entradas: No Aplica
+
         Resultado esperado:
+            En una lista con la forma
+
+                test_matrix = [
+                    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+                    [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+                    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+                ]
+
+            Los valores obtenidos deben ser:
+                [[0, 6], [1, 1], [2, 2], [2, 5], [3, 2], [5, 0], [5, 3]]
 
         @return Sin retorno
         """
@@ -102,8 +138,27 @@ class TestAEstrella(TestCase):
     def test_posicion_conejo(self):
 
         """
-        Entradas:
+        Se encarga de probar la funcion de extraer la posicion del conejo
+        que se encuentra en la matriz/tablero de juego
+
+        Entradas: No Aplica
+
         Resultado esperado:
+            El resultado esperado es un punto [x,y] representando los indices
+            donde se encuentra ubicado el conejo dentro del tablero
+
+            En este caso, para la matriz de prueba  que aparece a continuación:
+
+            test_matrix = [
+                [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+                [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+                [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+            ]
+
+            La posicion del conejo es [2,1]
 
         @return Sin retorno
         """
@@ -127,8 +182,38 @@ class TestAEstrella(TestCase):
 
     def test_desplazar_conejo(self):
         """
-        Entradas:
+        Lo que se pretende en esta prueba, es verificar la funcion de
+        desplazamiento del conejo, es decir, poner moverlo de una ubicacion
+        [x1, y1] a [x2, y2], reemplazando el valor de la casilla [x1, y1] por
+        el simbolo de vacio ' ', y además agregando el simbolo de conejo en
+        la casilla [x2, y2]
+
+        Entradas: No Aplica
+
         Resultado esperado:
+            Para la matriz:
+
+            test_matrix = [
+                [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+                [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+                [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+            ]
+
+            Se espera que el conejo de desplace la ubicacion:
+                pos_vieja = [2, 1] ---> pos_nueva = [1, 1]
+
+            Teniendo como resultado la matriz:
+            [
+                [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                [' ', 'C', ' ', ' ', ' ', ' ', ' '],
+                [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
+                [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+            ]
 
         @return Sin retorno
         """
@@ -257,3 +342,102 @@ class TestAEstrella(TestCase):
 
         self.assertEqual(m1.tolist(), m_izq)
         self.assertEqual(m2.tolist(), m_der)
+
+    # -------------------------------------------------------------------------
+
+    def test_calcular_mejor_sucesor(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(sucesor, sucesor_real)
+
+    # -------------------------------------------------------------------------
+
+    def test_verificar_meta(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(meta, meta_real)
+
+    # -------------------------------------------------------------------------
+
+    def test_delimitar_rango_vision(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(rango, rango_real)
+
+    # -------------------------------------------------------------------------
+
+    def test_castigar_distancia(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(costo_sucesores, costo_sucesores_real)
+
+    # -------------------------------------------------------------------------
+
+    def test_castigar_emisferios(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(costo_sucesores, costo_sucesores_real)
+
+    # -------------------------------------------------------------------------
+
+    def test_castigar_espacio_desconocido(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(costo_sucesores, costo_sucesores_real)
+
+    # -------------------------------------------------------------------------
+
+    def test_castigar_direccion_padre(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(costo_sucesores, costo_sucesores_real)
+
+    # -------------------------------------------------------------------------
+
+    def test_direccion_padre(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(costo_sucesores, costo_sucesores_real)
+
+    # -------------------------------------------------------------------------
+
+    def test_costos_direccion(self):
+        """
+        Entradas:
+        Resultado esperado:
+
+        @return Sin retorno
+        """
+        self.assertEqual(costo_sucesores, costo_sucesores_real)
