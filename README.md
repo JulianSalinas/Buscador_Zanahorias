@@ -287,9 +287,18 @@ implementadas en la función.
     
 4. Aplicación de un costo a la dirección del padre, si en la misma no existía zanahoria
     
+    Este costo es agregado a la dirección de la que provenía el conejo si en esta no existía una zanahoria.
+    Lo que se pretende, es evitar que el conejo quiera devolverse a una posicion ya explorada, donde no existía
+    ninguna meta.
+    
+    A continuación se muestra el llamado a la función
+    que se encuentra en el código para el cálculo del heurístico.
+    
         costo_sucesores = castigar_direccion_padre(costo_sucesores,
                                                direccion_vieja)
-
+    
+    **NOTA:** El costo agregado para esta penalización es de **10**.
+    
 #### _Análisis de resultados_
 
 
