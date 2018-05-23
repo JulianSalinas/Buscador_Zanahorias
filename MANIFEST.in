@@ -1,0 +1,8 @@
+
+#Archivos 
+recursive-include tec/ic/ia/pc2/files *
+
+
+#Misc
+include README.md 
+include LICENSE.md
