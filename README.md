@@ -201,11 +201,37 @@ para terminar su labor, y así darse por satisfecho después de comerse esa cant
 ###### _Diseño de la función_
 Una vez que se tienen claras las consideraciones del instructivo, se puede proceder con el diseño del heurístico.
 Mismo que se diseña en conjunto con el grupo de trabajo, donde se concluyen las siguientes consideraciones que fueron 
-implementadas en la función. Entre estas encontramos:
+implementadas en la función.
 
 1. Aplicación de un costo según la distancia lineal a las zanahorias
 
+    En este caso, el costo que se le aplica a un sucesor es básicamente la distancia más corta hacia
+    una zanahoria que se encuentre dentro de su rango de visión. A continuación se muestra el llamado a la función
+    que se encuentra en el código para el cálculo del heurístico.  
+ 
         costo_sucesores = castigar_distancia(sucesores, zanahorias, pasos_actuales)
+    
+    Para poner un ejemplo de este cálculo se presenta la siguiente imagen:
+    
+    ![tablero2](/imgs/a_estrella/tablero2.png "Tablero para calcular distancia lineal")
+    
+    Entonces como se puede ver, el conejo podría desplazarse a cuatro posibles direcciones, que serían las
+    que están de color azúl.
+    
+        Izquierda, en la posición [6, 0]
+        Derecha, en la posición [6, 2]
+        Arriba, en la posición [5, 1]
+        Abajo, en la posición [7, 1]
+    
+    Luego, para cada una de estas se determina la zanahoria más cercana y se calcúla la distancia.
+    Nótese que las zanahorias más cercanas para cada dirección, se encuentran señaladas por una flecha.
+    
+    Por último, el cálculo de la distancia que representa el costo que se le va agregar a cada dirección se muestra a continuación:
+        
+        Izquierda [6, 0]-> Zanahoria [10, 0]  -> Costo = 4 
+        Derecha [6, 2]  -> Zanahoria [3, 4]   -> Costo = 5
+        Arriba [5, 1]   -> Zanahoria [3, 4]   -> Costo = 5
+        Abajo [7, 1]    -> Zanahoria [10, 0]  -> Costo = 4
 
 2. Aplicación de un costo según la región que tenga más zanahorias
     
