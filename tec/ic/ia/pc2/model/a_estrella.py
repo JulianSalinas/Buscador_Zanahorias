@@ -1,5 +1,10 @@
+# -----------------------------------------------------------------------------
+
 import queue
+import shutil
+import webbrowser
 import numpy as np
+from tec.ic.ia.pc2.model.file_utils import *
 
 
 # -----------------------------------------------------------------------------
@@ -587,7 +592,34 @@ def get_costos_direccion(costo_sucesores):
     return costo_izq, costo_der, costo_arriba, costo_abajo
 
 
-#  -----------------------------------------------------------------------------
+#  ----------------------------------------------------------------------------
+
+def obtener_folder():
+
+    folder = get_default_folder()
+    folder = os.path.join(folder, "a_estrella")
+
+    # Borra el de la corrida anterior
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+
+    # Se crear el directorio si es necesario
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    return folder
+
+#  ----------------------------------------------------------------------------
+
+
+def guardar_paso(folder, pasos_actuales, matriz):
+
+    filename = str(pasos_actuales).zfill(5) + ".txt"
+    filename = os.path.join(folder, filename)
+    save_file(filename, matriz)
+
+#  ----------------------------------------------------------------------------
+
 
 def a_estrella(matriz, rango_vision, cant_zanahorias):
     """
@@ -603,6 +635,8 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
     comerse el conejo para darse por satisfecho
     :return: No existe retorno
     """
+
+    folder = obtener_folder()
 
     pos_actual = calc_pos_conejo(matriz)
     pasos_actuales = 0
@@ -657,28 +691,35 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
               % (str(pasos_actuales).zfill(5), str(costo_izq).ljust(5),
                  str(costo_der).ljust(5), str(costo_arriba).ljust(5),
                  str(costo_abajo).ljust(5), mejor_movimiento))
+        guardar_paso(folder, pasos_actuales, matriz)
 
     print('PASO: %s \tFINAL' % (str(pasos_actuales).zfill(5)))
+    guardar_paso(folder, pasos_actuales, matriz)
+
+    # Abrir carpeta al finalizar
+    webbrowser.open(folder)
 
 
-test_matrix = np.matrix([
-    [' ', ' ', ' ', ' ', 'C', ' ', 'Z'],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
-    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', 'Z', ' ', 'Z'],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    ['Z', ' ', ' ', 'Z', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', 'Z', ' ', ' ', ' ', 'Z'],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
-    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    ['Z', ' ', ' ', 'Z', ' ', ' ', 'Z'],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', 'Z', ' ', ' ', 'Z', ' ', ' ']
-])
+if __name__ == '__main__':
 
-a_estrella(test_matrix, 2, 10)
+    test_matrix = np.matrix([
+        [' ', ' ', ' ', ' ', 'C', ' ', 'Z'],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
+        [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', 'Z', ' ', 'Z'],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        ['Z', ' ', ' ', 'Z', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'Z', ' ', ' ', ' ', 'Z'],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
+        [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        ['Z', ' ', ' ', 'Z', ' ', ' ', 'Z'],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'Z', ' ', ' ', 'Z', ' ', ' ']
+    ])
+
+    a_estrella(test_matrix, 2, 10)
