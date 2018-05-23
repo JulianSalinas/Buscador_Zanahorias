@@ -39,8 +39,8 @@ def weights():
         'f': -2500,
         's': -1,
         'af': -5,
-        'anf': -10,
-        'apc': 15,
+        'anf': -15,
+        'apc': 10,
         '180°t': -1000,
         'bfc': 1500
     }
@@ -233,6 +233,7 @@ def walk_rabbit_path(board, direction, row, col, carrot_count, mat_shape,
     steps = 0
     arrows_found = 0
     _180_degree_turns = 0
+    last_cell = ' '
 
     arrow_symbols = ['<', '>', 'A', 'V']
     opposite_direction = {'A': 'V', 'V': 'A', '>': '<', '<': '>'}
@@ -311,13 +312,15 @@ def eval_fitness(gen, direction, mat_shape):
     pcw = picked_carrots * weights()['pc']
     fw = weights()['f'] if rabbit_fall else 0
     sw = steps * weights()['s']
+    if rabbit_fall:
+        sw = -sw
     afw = arrows_found * weights()['af']
     anfw = (arrow_count - arrows_found) * weights()['anf']
     apcw = arrows_pointing * weights()['apc']
     _180dtw = _180_degree_turns * weights()['180°t']
     bfcw = first_carrot_is_optimal * weights()['bfc']
 
-    score = pcw + fw + sw + afw + anfw + apcw + _180dtw + bfcw
+    score = pcw + fw + sw + afw + anfw + apcw + bfcw
 
     gen.set_score(score)
 
@@ -407,28 +410,22 @@ def generate(parents, selection_type, direction, mat_shape,
         shuffle(index_list)
 
         for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
-            children = get_children(parents[gen1_idx],
-                                    parents[gen2_idx],
-                                    cross_type,
-                                    direction,
-                                    mat_shape,
+            children = get_children(parents[gen1_idx], parents[gen2_idx],
+                                    cross_type, direction, mat_shape,
                                     mutation_chance)
-            for child in children:
-                if not gen_in_list(child, resulting_generation):
-                    resulting_generation.append(child)
+
+            resulting_generation += [child for child in children if not
+                                     gen_in_list(child, resulting_generation)]
 
     elif selection_type == 2:
         _range = range(0, int(len(resulting_generation) / 2))
         for i in _range:
-            children = get_children(parents[i * 2],
-                                    parents[i * 2 + 1],
-                                    cross_type,
-                                    direction,
-                                    mat_shape,
+            children = get_children(parents[i * 2], parents[i * 2 + 1],
+                                    cross_type, direction, mat_shape,
                                     mutation_chance)
-            for child in children:
-                if not gen_in_list(child, resulting_generation):
-                    resulting_generation.append(child)
+
+            resulting_generation += [child for child in children if not
+                                     gen_in_list(child, resulting_generation)]
 
     return resulting_generation
 
@@ -510,11 +507,11 @@ starting_board = [
     [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
-
-optimal = run_carrot_finder(initial_direction='derecha',
+seed(11)
+optimal = run_carrot_finder(initial_direction='izquierda',
                             individuals=15,
                             max_generations=500,
                             mutation_chance=80,
                             initial_board=starting_board,
                             selection_type=1,
-                            cross_type=2)[0]
+                            cross_type=1)[0]
