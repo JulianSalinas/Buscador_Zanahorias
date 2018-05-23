@@ -1,5 +1,9 @@
+# -----------------------------------------------------------------------------
+
+import os
 import queue
 import numpy as np
+from file_utils import *
 
 
 # -----------------------------------------------------------------------------
@@ -587,7 +591,22 @@ def get_costos_direccion(costo_sucesores):
     return costo_izq, costo_der, costo_arriba, costo_abajo
 
 
-#  -----------------------------------------------------------------------------
+#  ----------------------------------------------------------------------------
+
+def guardar_paso(pasos_actuales, matriz):
+
+    folder = get_default_folder()
+    folder = os.path.join(folder, "a_estrella")
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    filename = str(pasos_actuales).zfill(5) + ".txt"
+    filename = os.path.join(folder, filename)
+    save_file(filename, matriz)
+
+#  ----------------------------------------------------------------------------
+
 
 def a_estrella(matriz, rango_vision, cant_zanahorias):
     """
@@ -657,28 +676,32 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
               % (str(pasos_actuales).zfill(5), str(costo_izq).ljust(5),
                  str(costo_der).ljust(5), str(costo_arriba).ljust(5),
                  str(costo_abajo).ljust(5), mejor_movimiento))
+        guardar_paso(pasos_actuales, matriz)
 
     print('PASO: %s \tFINAL' % (str(pasos_actuales).zfill(5)))
+    guardar_paso(pasos_actuales, matriz)
 
 
-test_matrix = np.matrix([
-    [' ', ' ', ' ', ' ', 'C', ' ', 'Z'],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
-    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', 'Z', ' ', 'Z'],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    ['Z', ' ', ' ', 'Z', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', 'Z', ' ', ' ', ' ', 'Z'],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
-    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    ['Z', ' ', ' ', 'Z', ' ', ' ', 'Z'],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', 'Z', ' ', ' ', 'Z', ' ', ' ']
-])
+if __name__ == '__main__':
 
-a_estrella(test_matrix, 2, 10)
+    test_matrix = np.matrix([
+        [' ', ' ', ' ', ' ', 'C', ' ', 'Z'],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
+        [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', 'Z', ' ', 'Z'],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        ['Z', ' ', ' ', 'Z', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'Z', ' ', ' ', ' ', 'Z'],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
+        [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        ['Z', ' ', ' ', 'Z', ' ', ' ', 'Z'],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'Z', ' ', ' ', 'Z', ' ', ' ']
+    ])
+
+    a_estrella(test_matrix, 2, 10)
