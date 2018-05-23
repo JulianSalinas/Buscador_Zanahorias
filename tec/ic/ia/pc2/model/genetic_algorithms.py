@@ -1,6 +1,10 @@
+
+import shutil
+import webbrowser
 import numpy as np
 from random import randint, shuffle, seed
 from math import ceil
+from tec.ic.ia.pc2.model.file_utils import *
 
 
 class Gen:
@@ -433,6 +437,43 @@ def replacement(generation, individuals):
     return generation[:individuals]
 
 
+def create_folder(folder):
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+
+def get_folder(direction):
+    folder = get_default_folder()
+    folder = os.path.join(folder, "genetic_algoritms")
+    folder = os.path.join(folder, direction)
+    create_folder(folder)
+    return folder
+
+
+def get_generation_folder(base_folder, generation_number):
+    folder = base_folder[:]
+    folder = os.path.join(folder, generation_number)
+    create_folder(folder)
+    return folder
+
+
+def save_single_gen(generation_folder, single_gen, gen_shape, gen_number):
+    filename = str(gen_number).zfill(5) + ".txt"
+    filename = os.path.join(generation_folder, filename)
+    save_file(filename, single_gen.get_array().reshape(gen_shape))
+
+
+def save_generation(base_folder, generation, generation_number, gen_shape):
+
+    generation_number = str(generation_number).zfill(5)
+    generation_folder = get_generation_folder(base_folder, generation_number)
+
+    for i in range(len(generation)):
+        save_single_gen(generation_folder, generation[i], gen_shape, i)
+
+
 def run_carrot_finder(initial_direction, individuals, max_generations,
                       mutation_chance, initial_board, cross_type=1,
                       custom_seed=-1):
@@ -447,6 +488,9 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
     :param custom_seed: semilla de random para reproducibilidad de resultados
     :return: lista con la última generación ordenada por fitness de Genes
     """
+
+    base_folder = get_folder(initial_direction)
+
     if custom_seed < 0:
         seed(time())
     else:
@@ -475,6 +519,7 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
 
         # Se seleccionan los mejores
         generation = replacement(generation, individuals)
+        save_generation(base_folder, generation, generation_number, dimensions)
 
         if generation[0].get_score() > current_best_score:
             optimal_origin_generation = generation_number
@@ -497,29 +542,35 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
         print('\nGENERACIÓN DEL MEJOR ENCONTRADO:',
               '{:05}'.format(optimal_origin_generation))
 
+    # Abrir carpeta al finalizar
+    webbrowser.open(base_folder)
+
     return generation
 
 
-starting_board = [
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'C', ' '],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
-starting_board = np.matrix(starting_board, object)
-optimal = run_carrot_finder(initial_direction='izquierda',
-                            individuals=15,
-                            max_generations=500,
-                            mutation_chance=80,
-                            initial_board=starting_board,
-                            cross_type=1, custom_seed=20)[0]
+if __name__ == '__main__':
+
+    starting_board = [
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'C', ' '],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
+    
+    starting_board = np.matrix(starting_board, object)
+    optimal = run_carrot_finder(initial_direction='derecha',
+                                individuals=15,
+                                max_generations=500,
+                                mutation_chance=80,
+                                initial_board=starting_board,
+                                cross_type=1, custom_seed=20)[0]
