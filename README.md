@@ -154,13 +154,74 @@ Para utilizar el módulo instalado se puede importar de la siguiente forma desde
 
 ________________
 
-El objetivo principal fue desarrollar un algoritmo de búsqueda que se basa en la técnica de A*, en un ambiente donde se cuenta con un tablero de juego, un conejo como punto de partida y una serie de zanahorias que cumpliran la función de metas u objetivos dentro del algoritmo a desarrollar. 
+El objetivo principal fue desarrollar un algoritmo de búsqueda que se basa en la técnica de A*, en un ambiente donde se cuenta con un tablero de juego, un conejo como punto de partida y una serie de zanahorias que cumpliran la función de metas u objetivos dentro del algoritmo a desarrollar.
 
-#### _Detalles de implementación_
+
+#### _Flujo de implementación_
+En esta sección, se pretende mostrar una pequeña lista de pasos que se llevaron a cabo durante el desarrollo del proyecto, con la finalidad de tener una idea más clara del comportamiento del algoritmo implementado.
+
+1. En primera instancia, se debe tener claro que el algoritmo necesita tanto de un tablero de juego, donde se encuentran ubicadas las zanahorias y el conejo. También un parámetro que indique cuántas zanahorias son necesarias para que el conejo se de por satisfecho y además, un número indicando el rango de visión que tiene el conejo a su alrededor.
+
+2. Una vez que dichos parámetros son ingresados, el algoritmo entra en un ciclo (while) el cual mantiene en ejecución la función principal hasta que el conejo logre comerse todas las zanahorias que son necesarias. En contraparte, si el conejo no lograse encontrarlas, el sistema deberá abortarse por medio de la combinación de teclas _<ctrl+c>._
+
+3. Respecto al funcionamiento de la función principal, el mismo se encarga de contabilizar los pasos que ha dado el conejo hasta cierto punto, además de calcular los sucesores y sus respectivos costos para una posición [X, Y] donde se encuentre el conejo.
+
+4. Una vez que se realiza el cálculo de la función de costo para cada posible sucesor, el algoritmo se encarga de elegir el de menor costo, desplazando el conejo hacia la dirección que represente dicho sucesor, verificando si se llegó a una meta y de ser así, se disminuyen las zanahorias faltantes (para que el conejo se de por satisfecho).   
 
 #### _Detalle de la función de costo f(n)_
+Respecto a esta función, se debe tener claro que la misma está condicionada por un costo acumulado **g(n)** y un heurístico **h(n)** que indica el costo de una cierta posición hacia la meta.
+
+Entonces, la función de costo para desplazar el conejo a una posición determinada, está dada por:
+
+    f(n) = g(n) + h(n)
+
+ 
 ##### _Costo acumulado_
+Tal como se menciona en el instructivo del proyecto, el acumulado hasta un punto específico en la ejecución del algoritmo será simplemente la cantidad de pasos que ha dado el conejo.
+Dejando así que dicho costo sea simplente un contador de "pasos actuales", y por ende no se diseña ninguna función para representarle.
+
+La fórmula de este costo estaría dada por:
+    
+    g(n) = Cantidad de Pasos Actuales
+   
 ##### _Costo del heurístico_
+
+###### _Consideraciones del Instructivo_
+Primero que todo, antes de abarcar el diseño del heurístico, se considera importante considerar
+las siguientes instrucciones dadas en el instructivo del proyecto y que tienen un impacto importante 
+en el diseño del heurístico:
+
+* El ambiente no es completamente observable.
+* El conejo tendrá un rango de visión.
+* El diseño del heurístico no debe incluir "memoria" que haga el ambiente implícitamente
+observable.
+* Se indicará al inicio del programa cuántas zanahorias en total debe buscar el conejo
+para terminar su labor, y así darse por satisfecho después de comerse esa cantidad. 
+
+###### _Diseño de la función_
+Una vez que se tienen claras las consideraciones del instructivo, se puede proceder con el diseño del heurístico.
+Mismo que se diseña en conjunto con el grupo de trabajo, donde se concluyen las siguientes consideraciones que fueron 
+implementadas en la función. Entre estas encontramos:
+
+1. Aplicación de un costo según la distancia lineal a las zanahorias
+
+        costo_sucesores = castigar_distancia(sucesores, zanahorias, pasos_actuales)
+
+2. Aplicación de un costo según la región que tenga más zanahorias
+    
+        costo_sucesores = castigar_emisferios(matriz_visible, costo_sucesores,
+                                          pos_actual, cant_zanahorias)
+
+3. Aplicación de un costo si el sucesor va a un espacio desconocido
+    
+        costo_sucesores = castigar_esp_desconocido(costo_sucesores, forma_matriz)
+
+4. Aplicación de un costo a la dirección del padre, si en la misma no existía zanahoria
+    
+        costo_sucesores = castigar_direccion_padre(costo_sucesores,
+                                               direccion_vieja)
+
+#### _Análisis de resultados_
 
 
 ### Algoritmos Genéticos
