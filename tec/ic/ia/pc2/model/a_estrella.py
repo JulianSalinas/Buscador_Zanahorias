@@ -2,6 +2,7 @@
 
 import queue
 import shutil
+import webbrowser
 import numpy as np
 from tec.ic.ia.pc2.model.file_utils import *
 
@@ -694,6 +695,9 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
 
     print('PASO: %s \tFINAL' % (str(pasos_actuales).zfill(5)))
     guardar_paso(folder, pasos_actuales, matriz)
+
+    # Abrir carpeta al finalizar
+    webbrowser.open(folder)
 
 
 if __name__ == '__main__':
