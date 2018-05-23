@@ -213,7 +213,7 @@ implementadas en la función.
     
     Para poner un ejemplo de este cálculo se presenta la siguiente imagen:
     
-    ![tablero2](/imgs/a_estrella/tablero2.png "Tablero para calcular distancia lineal")
+    ![tablero2](/imgs/a_estrella/tablero2.PNG "Tablero para calcular distancia lineal")
     
     Entonces como se puede ver, el conejo podría desplazarse a cuatro posibles direcciones, que serían las
     que están de color azúl.
