@@ -23,6 +23,7 @@ def get_arguments():
     parser.add_argument('--individuos', nargs=1, type=int)
     parser.add_argument('--generaciones', nargs=1, type=int)
     parser.add_argument('--tablero-inicial', nargs=1, type=str)
+    parser.add_argument('--semilla', nargs=1, type=int)
 
     return parser.parse_args()
 

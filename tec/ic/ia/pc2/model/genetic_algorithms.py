@@ -21,6 +21,7 @@ class Gen:
     def get_array(self): return self.gen_array
 
 
+__console_output__ = True
 __print_frecuency__ = 100
 __print_per_generation__ = 3
 __weigths__ = {}
@@ -157,11 +158,6 @@ def analyze_carrots(board, carrot_positions, rabbit_row, rabbit_col):
     def arrow_count_in_subpath(subpath, arrow):
         if len(subpath) == 0:
             return 0
-        try:
-            cut = subpath.index('Z')
-            subpath = subpath[:cut]
-        except ValueError as ve:
-            pass
 
         temp = np.array(subpath, object)
         return 1 if np.count_nonzero(temp == arrow) > 0 else 0
@@ -397,12 +393,11 @@ def get_children(parent1, parent2, cross_type, direction, mat_shape,
     return children
 
 
-def generate(parents, selection_type, direction, mat_shape,
+def generate(parents, direction, mat_shape,
              mutation_chance, cross_type):
     """
     Realiza el cruce de los genes según dos tipos de selección diferente
     :param parents: lista de Genes para cruzar
-    :param selection_type: 1 -> random, 2 -> parejas en orden
     :param direction: dirección inicial del conejo para evaluar fitness
     :param mat_shape: dimensiones de la matriz para evaluar fitness
     :param mutation_chance: probabilidad de 0 a 100 de mutación
@@ -412,27 +407,16 @@ def generate(parents, selection_type, direction, mat_shape,
     resulting_generation = list()
     resulting_generation += parents
 
-    if selection_type == 1:
-        index_list = list(range(0, len(parents)))
-        shuffle(index_list)
+    index_list = list(range(0, len(parents)))
+    shuffle(index_list)
 
-        for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
-            children = get_children(parents[gen1_idx], parents[gen2_idx],
-                                    cross_type, direction, mat_shape,
-                                    mutation_chance)
+    for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
+        children = get_children(parents[gen1_idx], parents[gen2_idx],
+                                cross_type, direction, mat_shape,
+                                mutation_chance)
 
-            resulting_generation += [child for child in children if not
-                                     gen_in_list(child, resulting_generation)]
-
-    elif selection_type == 2:
-        _range = range(0, int(len(resulting_generation) / 2))
-        for i in _range:
-            children = get_children(parents[i * 2], parents[i * 2 + 1],
-                                    cross_type, direction, mat_shape,
-                                    mutation_chance)
-
-            resulting_generation += [child for child in children if not
-                                     gen_in_list(child, resulting_generation)]
+        resulting_generation += [child for child in children if not
+                                 gen_in_list(child, resulting_generation)]
 
     return resulting_generation
 
@@ -450,8 +434,23 @@ def replacement(generation, individuals):
 
 
 def run_carrot_finder(initial_direction, individuals, max_generations,
-                      mutation_chance, initial_board, selection_type=1,
-                      cross_type=1):
+                      mutation_chance, initial_board, cross_type=1,
+                      custom_seed=-1):
+    """
+    Función principal de ejecución del algoritmo genético
+    :param initial_direction: dirección en la que comienza a moverse el conejo
+    :param individuals: cantidad de invididuos por generación
+    :param max_generations: número máximo de generaciones por corrida
+    :param mutation_chance: número de 0 a 100 para la probabilidad de mutación
+    :param initial_board: numpy matrix con el tablero inicial
+    :param cross_type: 1 -> corte en un punto 2 -> corte en dos puntos
+    :param custom_seed: semilla de random para reproducibilidad de resultados
+    :return: lista con la última generación ordenada por fitness de Genes
+    """
+    if custom_seed < 0:
+        seed(time())
+    else:
+        seed(custom_seed)
 
     initial_direction = direction_to_arrow()[initial_direction]
 
@@ -472,7 +471,6 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
                               direction=initial_direction,
                               mutation_chance=mutation_chance,
                               mat_shape=dimensions,
-                              selection_type=selection_type,
                               cross_type=cross_type)
 
         # Se seleccionan los mejores
@@ -482,7 +480,9 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
             optimal_origin_generation = generation_number
             current_best_score = generation[0].get_score()
 
-        if generation_number % __print_frecuency__ == 0:
+        print_this_generation = generation_number % __print_frecuency__ == 0
+
+        if __console_output__ and print_this_generation:
             print('\nGENERACIÓN: {:05}'.format(generation_number))
             for i in range(0, len(generation[:__print_per_generation__])):
                 print(
@@ -490,11 +490,12 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
                     ' -> APTITUD: ' + str(generation[i].get_score())
                 )
 
-    print('\nMÁS APTO ENCONTRADO: ')
-    print(generation[0].get_array().reshape(starting_board.shape))
-    print('\nAPTITUD DEL MEJOR ENCONTRADO:', generation[0].get_score())
-    print('\nGENERACIÓN DEL MEJOR ENCONTRADO:',
-          '{:05}'.format(optimal_origin_generation))
+    if __console_output__:
+        print('\nMÁS APTO ENCONTRADO: ')
+        print(generation[0].get_array().reshape(starting_board.shape))
+        print('\nAPTITUD DEL MEJOR ENCONTRADO:', generation[0].get_score())
+        print('\nGENERACIÓN DEL MEJOR ENCONTRADO:',
+              '{:05}'.format(optimal_origin_generation))
 
     return generation
 
@@ -502,7 +503,7 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
 starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -510,17 +511,15 @@ starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'C', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
-seed(18)
-optimal = run_carrot_finder(initial_direction='derecha',
-                            individuals=10,
-                            max_generations=400,
+optimal = run_carrot_finder(initial_direction='izquierda',
+                            individuals=15,
+                            max_generations=500,
                             mutation_chance=80,
                             initial_board=starting_board,
-                            selection_type=1,
-                            cross_type=1)[0]
+                            cross_type=1, custom_seed=20)[0]

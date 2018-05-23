@@ -49,6 +49,7 @@ class TestGeneticAlgorithms(TestCase):
         """
         :return: Sin retorno
         """
+
         matrix = np.matrix([[1, 2, 3],
                             [4, 5, 6],
                             [7, 8, 9]])
@@ -126,7 +127,8 @@ class TestGeneticAlgorithms(TestCase):
                             ' ', 'Z', ' ',
                             'Z', '<', ' '],
                            dtype=object))
+        set_weights((3,3))
 
         score = eval_fitness(gen, '<', (3, 3))
 
-        self.assertEqual(score, 11506)
+        self.assertEqual(score, 2506)
