@@ -8,3 +8,11 @@ entonces la mutación no ocurre.
 3. A la hora de contar las flechas a apuntan a zanahorias, se cuentan todas las
  que se encuentran en la misma fila, con la dirección correspondiente y que no
  se encuentran detrás de otra zanahoria.
+
+4. Se da prioridad a menor cantidad de flechas por encima de menor cantidad de
+pasos, porque según los resultados observados, la solución es más legible de
+esta forma.
+
+5. NOTA IMPORTANTE: al igual que las zanahorias, se decidió que las flechas
+desaparecen del tablero una vez que el conejo llega a la celda que contiene
+dicha flecha.

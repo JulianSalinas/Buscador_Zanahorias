@@ -434,7 +434,23 @@ def replacement(generation, individuals):
 
 
 def run_carrot_finder(initial_direction, individuals, max_generations,
-                      mutation_chance, initial_board, cross_type=1):
+                      mutation_chance, initial_board, cross_type=1,
+                      custom_seed=-1):
+    """
+    Función principal de ejecución del algoritmo genético
+    :param initial_direction: dirección en la que comienza a moverse el conejo
+    :param individuals: cantidad de invididuos por generación
+    :param max_generations: número máximo de generaciones por corrida
+    :param mutation_chance: número de 0 a 100 para la probabilidad de mutación
+    :param initial_board: numpy matrix con el tablero inicial
+    :param cross_type: 1 -> corte en un punto 2 -> corte en dos puntos
+    :param custom_seed: semilla de random para reproducibilidad de resultados
+    :return: lista con la última generación ordenada por fitness de Genes
+    """
+    if custom_seed < 0:
+        seed(time())
+    else:
+        seed(custom_seed)
 
     initial_direction = direction_to_arrow()[initial_direction]
 
@@ -501,10 +517,9 @@ starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
-seed(20)
 optimal = run_carrot_finder(initial_direction='izquierda',
                             individuals=15,
                             max_generations=500,
                             mutation_chance=80,
                             initial_board=starting_board,
-                            cross_type=1)[0]
+                            cross_type=1, custom_seed=20)[0]
