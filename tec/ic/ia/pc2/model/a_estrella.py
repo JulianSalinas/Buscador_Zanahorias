@@ -28,7 +28,7 @@ def calc_distancia_lineal(pos, metas):
 
 # -----------------------------------------------------------------------------
 
-def calc_submatriz(matriz, pos_actual, rango_vision):
+def calc_submatriz_aux(matriz, pos_actual, rango_vision):
     """
     Funcion utilizada para el calculo de una submatriz que representa el rango
     de vision que tiene el conejo
@@ -53,6 +53,35 @@ def calc_submatriz(matriz, pos_actual, rango_vision):
     y_max = min(n_cols, pos_actual[1] + rango_vision + 1)
 
     sub_matriz = matriz[x_min:x_max, y_min:y_max]
+
+    return sub_matriz
+
+
+# -----------------------------------------------------------------------------
+
+def calc_submatriz(matriz, pos_actual, rango_vision):
+    """
+    Funcion utilizada para el calculo de una submatriz que representa el rango
+    de vision que tiene el conejo
+
+    :param matriz: es la matriz que representa el tablero por completo,
+    de la forma [[fila1], [fila2], ..., [filaN]]
+    :param pos_actual: posicion del conejo en el tablero, de la forma [x, y]
+    :param rango_vision: es un numero que representa la cantidad de casillas
+    que el conejo puede visualizar a su alrededor
+    :return: sub matriz con n filas y m columnas, representando el rango
+    de vision del conejo
+    """
+    sub_matriz = matriz.copy()
+
+    zanahorias = calc_pos_simbolo(matriz, 'Z')
+
+    z_visibles = delimitar_rango_vision(matriz, pos_actual, rango_vision)
+
+    for i in z_visibles:
+        zanahorias.remove(i)
+
+    sub_matriz.put(zanahorias, ' ')
 
     return sub_matriz
 
@@ -356,7 +385,7 @@ def castigar_distancia(sucesores, zanahorias, pasos_actuales):
 
 # -----------------------------------------------------------------------------
 
-def castigar_emisferios(matriz, costo_sucesores, pos_actual):
+def castigar_emisferios(matriz, costo_sucesores, pos_actual, cant_zanahorias):
     """
     Funcion utilizada para castigar las direcciones donde se encuentran menos
     zanahorias
@@ -367,6 +396,8 @@ def castigar_emisferios(matriz, costo_sucesores, pos_actual):
     con su respectiva posicion y etiqueta de direccion
     :param pos_actual: posicion que ocupa el conejo actualmente, es decir,
     antes de que se desplace
+    :param cant_zanahorias: es l cantidad de zanahorias que le faltan por comer
+    al conejo para verse satisfecho
     :return: costo de cada uno de los posibles sucesores, con su respectiva
     posicion y etiqueta de direccion
     """
@@ -382,16 +413,20 @@ def castigar_emisferios(matriz, costo_sucesores, pos_actual):
     for i in costo_sucesores:
         dir_sucesor = i[1][1]
         if dir_sucesor == 'IZQUIERDA':
-            if len(zanahorias_izq) < len(zanahorias_der):
+            if len(zanahorias_izq) < len(zanahorias_der) \
+                    == cant_zanahorias:
                 i[0] += 3
         elif dir_sucesor == 'DERECHA':
-            if len(zanahorias_der) < len(zanahorias_izq):
+            if len(zanahorias_der) < len(zanahorias_izq) \
+                    == cant_zanahorias:
                 i[0] += 3
         elif dir_sucesor == 'ABAJO':
-            if len(zanahorias_abajo) < len(zanahorias_arriba):
+            if len(zanahorias_abajo) < len(zanahorias_arriba) \
+                    == cant_zanahorias:
                 i[0] += 3
         else:
-            if len(zanahorias_arriba) < len(zanahorias_abajo):
+            if len(zanahorias_arriba) < len(zanahorias_abajo) \
+                    == cant_zanahorias:
                 i[0] += 3
 
     return costo_sucesores
@@ -414,9 +449,9 @@ def castigar_esp_desconocido(costo_sucesores, forma_matriz):
 
     for i in costo_sucesores:
         posicion = i[1][0]
-        if (0 > posicion[0] > forma_matriz[0] - 1) or\
-                (0 > posicion[1] > forma_matriz[1] - 1):
-            i[1][0] += 999
+        if (0 > posicion[0]) or (posicion[0] > forma_matriz[0] - 1) or\
+                (0 > posicion[1]) or (posicion[1] > forma_matriz[1] - 1):
+            i[0] += 100
 
     return costo_sucesores
 
@@ -474,7 +509,8 @@ def castigar_direccion_padre(costo_sucesores, direccion_vieja):
 # -----------------------------------------------------------------------------
 
 def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
-                        pos_actual, rango_vision, direccion_vieja):
+                        pos_actual, rango_vision, direccion_vieja,
+                        cant_zanahorias):
     """
     Funcion utilizada para determinar el heuristico de un determinado
     movimiento, aplicando los diferentes tipos de castigo a cada direccion
@@ -492,6 +528,8 @@ def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
     que puede ver el conejo a su alrededor
     :param direccion_vieja: es la etiqueta con la direccion que llevo al conejo
     a estar donde se encuentra actualmente
+    :param cant_zanahorias: es l cantidad de zanahorias que le faltan por comer
+    al conejo para verse satisfecho
     :return: costo de cada uno de los posibles sucesores, con su respectiva
     posicion y etiqueta de direccion luego de penalizar por direccion
     """
@@ -508,7 +546,7 @@ def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
 
     # Castigamos segun la region que tenga mas zanahorias
     costo_sucesores = castigar_emisferios(matriz_visible, costo_sucesores,
-                                          pos_actual)
+                                          pos_actual, cant_zanahorias)
 
     # Castigamos si el sucesor va a un espacio desconocido
     costo_sucesores = castigar_esp_desconocido(costo_sucesores, forma_matriz)
@@ -570,6 +608,8 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
     pasos_actuales = 0
     direccion_vieja = []
     while cant_zanahorias > 0:
+        # Aumentamos el  valor de g() para calcular los sucesores
+        pasos_actuales += 1
 
         # Calculamos los estados a los que se puede desplazar el conejo
         sucesores = estados_sucesores(pos_actual)
@@ -582,7 +622,8 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
         # Calculamos el heuristico para cada estado sucesor
         costo_sucesores = \
             calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
-                                pos_actual, rango_vision, direccion_vieja)
+                                pos_actual, rango_vision, direccion_vieja,
+                                cant_zanahorias)
 
         # Calculamos cual de todos es el mejor sucesor
         mejor_sucesor = calc_mejor_sucesor(costo_sucesores)
@@ -602,17 +643,42 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
         # Actualizamos la posicion actual del conejo
         pos_actual = pos_nueva
 
-        # Aumentamos el  valor de g() para calcular los sucesores
-        pasos_actuales += 1
-
         # Imprimimos los pasos ejecutados por el conejo
         costo_izq, costo_der, costo_arriba, costo_abajo = \
             get_costos_direccion(costo_sucesores)
 
         mejor_movimiento = mejor_sucesor[1][1]
         print('PASO: %s '
-              'IZQUIERDA: %d  DERECHA: %d  ARRIBA: %d  ABAJO: %d MOVIMIENTO: '
-              '%s ' % (str(pasos_actuales).zfill(5), costo_izq, costo_der,
-                       costo_arriba, costo_abajo, mejor_movimiento))
+              '\tIZQUIERDA: %s'
+              '\tDERECHA: %s'
+              '\tARRIBA: %s'
+              '\tABAJO: %s'
+              '\tMOVIMIENTO: %s '
+              % (str(pasos_actuales).zfill(5), str(costo_izq).ljust(5),
+                 str(costo_der).ljust(5), str(costo_arriba).ljust(5),
+                 str(costo_abajo).ljust(5), mejor_movimiento))
 
-    print('PASO: %s FINAL' % (str(pasos_actuales).zfill(5)))
+    print('PASO: %s \tFINAL' % (str(pasos_actuales).zfill(5)))
+
+
+test_matrix = np.matrix([
+    [' ', ' ', ' ', ' ', 'C', ' ', 'Z'],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
+    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', 'Z', ' ', 'Z'],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['Z', ' ', ' ', 'Z', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', 'Z', ' ', ' ', ' ', 'Z'],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
+    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['Z', ' ', ' ', 'Z', ' ', ' ', 'Z'],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', 'Z', ' ', ' ']
+])
+
+a_estrella(test_matrix, 2, 10)
