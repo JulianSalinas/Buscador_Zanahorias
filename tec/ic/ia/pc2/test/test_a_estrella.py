@@ -79,7 +79,8 @@ class TestAEstrella(TestCase):
         posicion_actual = [2, 1]
         rango_vision = 1
 
-        sub_matriz = calc_submatriz(test_matrix, posicion_actual, rango_vision)
+        sub_matriz =\
+            calc_submatriz_aux(test_matrix, posicion_actual, rango_vision)
 
         sub_matriz_real = [
             [' ', 'Z', ' '],
