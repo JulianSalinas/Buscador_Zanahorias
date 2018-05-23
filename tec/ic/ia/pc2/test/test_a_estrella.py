@@ -42,9 +42,12 @@ class TestAEstrella(TestCase):
         distancia_3 = distancias.get()
         distancia_3 = distancia_3[0]
 
-        self.assertEqual(distancia_1, 2)
-        self.assertEqual(distancia_2, 3)
-        self.assertEqual(distancia_3, 4)
+        respuesta = False
+
+        if distancia_1 == 2 and distancia_2 == 3 and distancia_3 == 4:
+            respuesta = True
+
+        self.assertTrue(respuesta)
 
     # -------------------------------------------------------------------------
 
@@ -84,7 +87,7 @@ class TestAEstrella(TestCase):
             [' ', ' ', 'Z']
         ]
 
-        self.assertTrue(sub_matriz.tolist(), sub_matriz_real)
+        self.assertEqual(sub_matriz.tolist(), sub_matriz_real)
 
     # -------------------------------------------------------------------------
 
@@ -217,6 +220,7 @@ class TestAEstrella(TestCase):
 
         @return Sin retorno
         """
+
         test_matrix = np.matrix([
             [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
             [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
@@ -246,8 +250,21 @@ class TestAEstrella(TestCase):
 
     def test_estados_sucesores(self):
         """
-        Entradas:
-        Resultado esperado:
+        Funcion utilizada para probar cuales son los indices sucesores a los
+        que podria desplazarse el conejo.
+        Los mismos serian: Izquierda, Derecha Arriba y Abajo
+
+        Entradas: No Aplica
+
+        Resultado esperado: Lo que se espera es que dada una posicion, la
+        funcion retorne los indices [x,y] de cada una de las direcciones
+        posibles.
+
+            Entonces, dada la posicion:
+                [2,2]
+
+            Se espera que la funcion devuelva la lista:
+                [[2, 1], [2, 3], [1, 2], [3, 2]]
 
         @return Sin retorno
         """
@@ -267,8 +284,39 @@ class TestAEstrella(TestCase):
 
     def test_split_horizontal(self):
         """
-        Entradas:
+        Prueba de la funcion encargada de hacer split en la matriz/tablero
+        de manera que se formen dos secciones (Top & Down).
+        Se debe tener claro que el split se realiza sobre un punto especifico
+        que representa donde esta posicionado el conejo.
+
+        Entradas: No aplica
+
         Resultado esperado:
+            Dada la posicion:
+                [2,1]
+
+            Y la matriz/tablero:
+                test_matrix = [
+                    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+                    [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+                    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+                ]
+
+            Se espera obtener las particiones:
+                m_arriba = [
+                    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                    [' ', 'Z', ' ', ' ', ' ', ' ', ' ']
+                ]
+
+                m_abajo = [
+                    [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+                    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+                ]
 
         @return Sin retorno
         """
@@ -298,18 +346,59 @@ class TestAEstrella(TestCase):
 
         m1, m2 = split_horizontal_matriz(test_matrix, pos_actual)
 
-        self.assertEqual(m1.tolist(), m_arriba)
-        self.assertEqual(m2.tolist(), m_abajo)
+        respuesta = False
+        if m1.tolist() == m_arriba and m2.tolist() == m_abajo:
+            respuesta = True
+
+        self.assertTrue(respuesta)
 
     # -------------------------------------------------------------------------
 
     def test_split_vertical(self):
         """
-        Entradas:
+        Prueba de la funcion encargada de hacer split en la matriz/tablero
+        de manera que se formen dos secciones (Left & Right).
+        Se debe tener claro que el split se realiza sobre un punto especifico
+        que representa donde esta posicionado el conejo.
+
+        Entradas: No aplica
+
         Resultado esperado:
+            Dada la posicion:
+                [2,1]
+
+            Y la matriz/tablero:
+                test_matrix = [
+                    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+                    [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+                    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+                ]
+
+            Se espera obtener las particiones:
+                m_izq = [
+                    [' '],
+                    [' '],
+                    [' '],
+                    [' '],
+                    [' '],
+                    ['Z']
+                ]
+
+                m_der = [
+                    [' ', ' ', ' ', ' ', ' ', 'Z'],
+                    ['Z', ' ', ' ', ' ', ' ', ' '],
+                    ['C', 'Z', ' ', ' ', 'Z', ' '],
+                    [' ', 'Z', ' ', ' ', ' ', ' '],
+                    [' ', ' ', ' ', ' ', ' ', ' '],
+                    [' ', ' ', 'Z', ' ', ' ', ' ']
+                ]
 
         @return Sin retorno
         """
+
         test_matrix = np.matrix([
             [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
             [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
@@ -340,104 +429,141 @@ class TestAEstrella(TestCase):
 
         m1, m2 = split_vertical_matriz(test_matrix, pos_actual)
 
-        self.assertEqual(m1.tolist(), m_izq)
-        self.assertEqual(m2.tolist(), m_der)
+        respuesta = False
+        if m1.tolist() == m_izq and m2.tolist() == m_der:
+            respuesta = True
 
-    # -------------------------------------------------------------------------
-
-    def test_calcular_mejor_sucesor(self):
-        """
-        Entradas:
-        Resultado esperado:
-
-        @return Sin retorno
-        """
-        self.assertEqual(sucesor, sucesor_real)
+        self.assertTrue(respuesta)
 
     # -------------------------------------------------------------------------
 
     def test_verificar_meta(self):
         """
-        Entradas:
+        Prueba de la funcion que verifica si el conejo en una posicion [x,y] a
+        llegado o no a una zanahoria(meta).
+
+        Entradas: No Aplica
+
         Resultado esperado:
+            Dada la posicion:
+                [1,1]
+
+            Con la matriz/tablero:
+                test_matrix = [
+                    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+                    [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+                    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+                ]
+
+            La funcion de verificar_meta debera devolver que SI esta ante la
+            presencia de una zanahoria en la posicion [1,1] del tablero
 
         @return Sin retorno
         """
-        self.assertEqual(meta, meta_real)
+
+        pos_conejo = [1, 1]
+
+        test_matrix = np.matrix([
+            [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+            [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+            [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+            [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+        ])
+
+        respuesta = verificar_meta(test_matrix, pos_conejo)
+
+        self.assertTrue(respuesta)
 
     # -------------------------------------------------------------------------
 
     def test_delimitar_rango_vision(self):
         """
-        Entradas:
+        Prueba de la funcion delimitar_rango_vision, la cual se encarga
+        de tomar el tablero y quitar de el, las zanahorias que se encuentren
+        fuera del rango de vision, dando como resultado los indices donde
+        se encuentran localizadas las zanahorias dentro del rango de vision
+
+        Entradas: No aplica
+
         Resultado esperado:
+            Se espera que dados los datos:
+                pos_actual = [2, 1]
+                rango_vision = 2
+
+                test_matrix = np.matrix([
+                    [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+                    [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+                    [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+                    [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                    ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+                ])
+
+            La funcion retorne los indices de las zanahorias:
+                [[1, 1], [2, 2], [3, 2]]
+
 
         @return Sin retorno
         """
-        self.assertEqual(rango, rango_real)
 
-    # -------------------------------------------------------------------------
+        pos_actual = [2, 1]
+        rango_vision = 2
 
-    def test_castigar_distancia(self):
-        """
-        Entradas:
-        Resultado esperado:
+        test_matrix = np.matrix([
+            [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
+            [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+            [' ', 'C', 'Z', ' ', ' ', 'Z', ' '],
+            [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            ['Z', ' ', ' ', 'Z', ' ', ' ', ' ']
+        ])
 
-        @return Sin retorno
-        """
-        self.assertEqual(costo_sucesores, costo_sucesores_real)
+        resp_esperada = [[1, 1], [2, 2], [3, 2]]
 
-    # -------------------------------------------------------------------------
+        res_obtenida =\
+            delimitar_rango_vision(test_matrix, pos_actual, rango_vision)
 
-    def test_castigar_emisferios(self):
-        """
-        Entradas:
-        Resultado esperado:
+        respuesta = False
+        if resp_esperada == res_obtenida:
+            respuesta = True
 
-        @return Sin retorno
-        """
-        self.assertEqual(costo_sucesores, costo_sucesores_real)
-
-    # -------------------------------------------------------------------------
-
-    def test_castigar_espacio_desconocido(self):
-        """
-        Entradas:
-        Resultado esperado:
-
-        @return Sin retorno
-        """
-        self.assertEqual(costo_sucesores, costo_sucesores_real)
-
-    # -------------------------------------------------------------------------
-
-    def test_castigar_direccion_padre(self):
-        """
-        Entradas:
-        Resultado esperado:
-
-        @return Sin retorno
-        """
-        self.assertEqual(costo_sucesores, costo_sucesores_real)
+        self.assertTrue(respuesta)
 
     # -------------------------------------------------------------------------
 
     def test_direccion_padre(self):
         """
-        Entradas:
+        Prueba de la funcion direccion_padre encargada de determinar la
+        direccion de la cual porvenia el conejo. Por ejemplo, si el ultimo
+        movimiento fue a la izquierda, para ir al padre se debe tomar
+        la direccion de la derecha.
+
+        Entradas: No aplica
+
         Resultado esperado:
+            Dada la direccion actual:
+                'IZQUIERDA'
+
+            Se espera que la funcion retorne la direcion
+                'DERECHA'
 
         @return Sin retorno
         """
-        self.assertEqual(costo_sucesores, costo_sucesores_real)
+
+        direccion_actual = 'IZQUIERDA'
+        direccion_esperada = 'DERECHA'
+
+        antecesor = direccion_padre(direccion_actual)
+
+        resp = False
+        if antecesor == direccion_esperada:
+            resp = True
+
+        self.assertTrue(resp)
 
     # -------------------------------------------------------------------------
-
-    def test_costos_direccion(self):
-        """
-        Entradas:
-        Resultado esperado:
-
-        @return Sin retorno
-        """
-        self.assertEqual(costo_sucesores, costo_sucesores_real)
