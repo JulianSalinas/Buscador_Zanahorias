@@ -122,7 +122,7 @@ def mutation_chance_effect_on_speed(custom_seed=0):
 # mutation 40: [3041, 3995, 3906, 4423, 4508, 4423, 4423, 4394, 4425, 4425]
 # mutation 80: [2958, 4418, 4506, 3807, 4427, 3908, 4487, 4425, 4425, 3995]
 
-# seed 2011 -> diferencia: -3674 osea m80 > m40
+# seed 2011 -> diferencia: -3674 osea m80 > m40 o -1238 sin contar el peor
 # mutation 40: [1529, 3993, 4427, 3896, 3984, 4316, 4510, 4427, 3991, 4405]
 # mutation 80: [3965, 4494, 4427, 4520, 4427, 4513, 4402, 4423, 3988, 3993]
 
@@ -130,7 +130,7 @@ def mutation_chance_effect_on_speed(custom_seed=0):
 # mutation 40: [4415, 4019, 4472, 3982, 4524, 3991, 4425, 4512, 4427, 4515]
 # mutation 80: [3063, 4425, 4423, 4491, 4427, 4427, 4421, 4508, 4427, 4427]
 
-# seed 5 -> diferencia: -3393 osea m80 > m40
+# seed 5 -> diferencia: -3393 osea m80 > m40 o -439 sin contar el peor
 # mutation 40: [1037, 4518, 4425, 4423, 4427, 4414, 3993, 3986, 3994, 4320]
 # mutation 80: [4006, 4379, 4423, 4423, 4006, 4427, 4425, 4423, 3991, 4427]
 
