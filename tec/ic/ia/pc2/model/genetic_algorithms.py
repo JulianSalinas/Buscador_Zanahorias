@@ -21,6 +21,7 @@ class Gen:
     def get_array(self): return self.gen_array
 
 
+__console_output__ = True
 __print_frecuency__ = 100
 __print_per_generation__ = 3
 __weigths__ = {}
@@ -157,11 +158,6 @@ def analyze_carrots(board, carrot_positions, rabbit_row, rabbit_col):
     def arrow_count_in_subpath(subpath, arrow):
         if len(subpath) == 0:
             return 0
-        try:
-            cut = subpath.index('Z')
-            subpath = subpath[:cut]
-        except ValueError as ve:
-            pass
 
         temp = np.array(subpath, object)
         return 1 if np.count_nonzero(temp == arrow) > 0 else 0
@@ -482,7 +478,9 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
             optimal_origin_generation = generation_number
             current_best_score = generation[0].get_score()
 
-        if generation_number % __print_frecuency__ == 0:
+        print_this_generation = generation_number % __print_frecuency__ == 0
+
+        if __console_output__ and print_this_generation:
             print('\nGENERACIÓN: {:05}'.format(generation_number))
             for i in range(0, len(generation[:__print_per_generation__])):
                 print(
@@ -490,11 +488,12 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
                     ' -> APTITUD: ' + str(generation[i].get_score())
                 )
 
-    print('\nMÁS APTO ENCONTRADO: ')
-    print(generation[0].get_array().reshape(starting_board.shape))
-    print('\nAPTITUD DEL MEJOR ENCONTRADO:', generation[0].get_score())
-    print('\nGENERACIÓN DEL MEJOR ENCONTRADO:',
-          '{:05}'.format(optimal_origin_generation))
+    if __console_output__:
+        print('\nMÁS APTO ENCONTRADO: ')
+        print(generation[0].get_array().reshape(starting_board.shape))
+        print('\nAPTITUD DEL MEJOR ENCONTRADO:', generation[0].get_score())
+        print('\nGENERACIÓN DEL MEJOR ENCONTRADO:',
+              '{:05}'.format(optimal_origin_generation))
 
     return generation
 
@@ -502,7 +501,7 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
 starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -510,16 +509,16 @@ starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'C', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
 seed(18)
-optimal = run_carrot_finder(initial_direction='derecha',
-                            individuals=10,
-                            max_generations=400,
+optimal = run_carrot_finder(initial_direction='izquierda',
+                            individuals=15,
+                            max_generations=500,
                             mutation_chance=80,
                             initial_board=starting_board,
                             selection_type=1,
