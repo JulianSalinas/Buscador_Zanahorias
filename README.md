@@ -167,5 +167,37 @@ Integrantes del proyecto:
 
 Estudiantes de Ingeniería en Computación del Instituto Tecnológico de Costa Rica.
 
+#### Algoritmos Genéticos
+
+El objetivo principal fue desarrollar un algoritmo genético que optimice la colocación de señales direccionales para que el conejo recorra el tablero.
+
+##### Representación del tablero en archivo
+Elementos utilizados en la definición del tablero a analizar:
+- C: en mayúscula, identifica la posición del conejo. Sólo podrá haber uno por tablero.
+- Z: en mayúscula, identifica la posición de una zanahoria. Puede haber múltiples
+zanahorias por tablero.
+- Espacio en blanco: El caracter de espacio no tiene ningún efecto secundario pero sí debe estar presente para indicar una posición en el tablero por la que el conejo puede transitar.
+- < : símbolo menor que, indica un cambio de dirección hacia la izquierda.
+- \> : símbolo mayor que, indica un cambio de dirección hacia la derecha.
+- A : letra A mayúscula, indica un cambio de dirección hacia arriba.
+- V : letra V mayúscula, indica un cambio de dirección hacia abajo.
+
+#### Detalles de implementación
+
+Previo a la implementación del algoritmo genético, fue necesario tomar algunas decisiones con respecto al comportamiento del mismo. Lo anterior dado que el enunciado del proyecto no podría ni debería cubrir todos los detalles relacionados al algoritmo. Dichos detalles se enumeran a continuación:
+
+1. **Importante:** se decidió que durante el recorrido del conejo, al igual que las zanahorias, las flechas desaparecen del tablero una vez que el conejo llega a la celda que contiene dicha flecha. Esto no se ve reflejado en los archivos de salida finales ni en la consola durante la ejecución, pero debe tenerse presente al interpretar la solución.
+
+2. Para la mutación, primero se obtiene un número aleatorio de celda, si la celda está vacía, se inserta una flecha aleatoria. Si la celda ya tiene una flecha, se genera un aleatorio para borrar o girar la flecha. Si contiene una zanahoria o al conejo, no sucede nada.
+
+3. Parte de la función de aptitud consiste en contar flechas que están apuntando a una zanahoria, entonces por cada zanahoria se cuenta una única dirección por cada una de las cuatro direcciones disponibles.
+
+4. Se da prioridad a brindar una solución con menor cantidad de flechas por encima de menor cantidad de pasos, esto pues no hay un criterio objetivo para diferir entre pasos o flechas. Pero si se observó que entre menor cantidad de flechas, más fácil resulta la interpretación de la solución final.
+
+#### Detalle de la función de aptitud
+
+#### Efectos de la tasa de mutación
+
+#### Efectos de la política de cruce
 
 

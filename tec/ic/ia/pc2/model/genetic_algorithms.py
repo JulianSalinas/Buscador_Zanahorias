@@ -5,6 +5,7 @@ import numpy as np
 from random import randint, shuffle, seed
 from math import ceil
 from tec.ic.ia.pc2.model.file_utils import *
+from time import time
 
 
 class Gen:
@@ -476,7 +477,7 @@ def save_generation(base_folder, generation, generation_number, gen_shape):
 
 def run_carrot_finder(initial_direction, individuals, max_generations,
                       mutation_chance, initial_board, cross_type=1,
-                      custom_seed=-1):
+                      custom_seed=-1, return_generation_number=False):
     """
     Función principal de ejecución del algoritmo genético
     :param initial_direction: dirección en la que comienza a moverse el conejo
@@ -486,6 +487,8 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
     :param initial_board: numpy matrix con el tablero inicial
     :param cross_type: 1 -> corte en un punto 2 -> corte en dos puntos
     :param custom_seed: semilla de random para reproducibilidad de resultados
+    :param return_generation_number: bandera para retornar el número de la
+    generación donde se encontró el mejor gen
     :return: lista con la última generación ordenada por fitness de Genes
     """
 
@@ -506,7 +509,8 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
                                             individuals=individuals,
                                             direction=initial_direction)
 
-    print('Pesos calculados: ', __weigths__)
+    if __console_output__:
+        print('Pesos calculados: ', __weigths__)
 
     for generation_number in range(1, max_generations + 1):
 
@@ -537,13 +541,16 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
 
     if __console_output__:
         print('\nMÁS APTO ENCONTRADO: ')
-        print(generation[0].get_array().reshape(starting_board.shape))
+        print(generation[0].get_array().reshape(initial_board.shape))
         print('\nAPTITUD DEL MEJOR ENCONTRADO:', generation[0].get_score())
         print('\nGENERACIÓN DEL MEJOR ENCONTRADO:',
               '{:05}'.format(optimal_origin_generation))
 
     # Abrir carpeta al finalizar
     webbrowser.open(base_folder)
+
+    if return_generation_number:
+        return generation, optimal_origin_generation
 
     return generation
 
