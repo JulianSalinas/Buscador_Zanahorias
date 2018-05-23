@@ -1,14 +1,13 @@
 # Buscador_Zanahorias
 
 
-
-###### Proyecto Corto II: Inteligencia Artificial
+## Proyecto Corto II: Inteligencia Artificial
 
 El propósito es aplicar dos tipos de algoritmos de búsqueda a un determinado problema. Para simplificar la explicación del mismo, se abstrae mediante el uso de un conejo que debe encontrar una cantidad determinada de zanahorias dentro del huerto. 
 
 
 
-###### Terminología 
+### Terminología 
 
 1. Huerto: Matriz de `n x m `Parcela: Posición `(i, j)` de la matriz.
 
@@ -26,13 +25,13 @@ El segundo se trata de un algoritmo `genético`. En este se limita al conejo a m
 
 
 
-#### Instalación 
+### Instalación 
 
 ________________
 
 
 
-##### Dependencias 
+#### Dependencias 
 
 Es necesario contar con `Python 3`  para poder realizar la instalación. Además, se requieren algunas dependecias que se pueden instalar utilizando `pip`: 
 
@@ -45,7 +44,7 @@ Es necesario contar con `Python 3`  para poder realizar la instalación. Además
 
 
 
-##### Instalación desde el código fuente 
+#### Instalación desde el código fuente 
 
 1. Se debe abrir una terminal con permisos de administrador  
 
@@ -57,7 +56,7 @@ Es necesario contar con `Python 3`  para poder realizar la instalación. Además
 
 
 
-##### Instalación utilizando pip install 
+#### Instalación utilizando pip install 
 
 1. Se debe abrir una terminal con permiso de administrador 
 
@@ -67,13 +66,13 @@ Es necesario contar con `Python 3`  para poder realizar la instalación. Además
 
 
 
-#### Manual de uso 
+### Manual de uso 
 
 _____
 
 
 
-##### Ejecución desde consola 
+#### Ejecución desde consola 
 
 Una vez instalado se pueden utilizar el algoritmo `A*` de la siguiente forma: 
 
@@ -87,42 +86,42 @@ El algoritmo `genético` se utiliza mediante el comando
 
 
 
-##### Parámetros
+#### Parámetros
 
 
 
-###### --a-estrella
+##### --a-estrella
 Indica que se desea ejecutar el algoritmo `A*`. 
 
 
 
-###### --genetico
+##### --genetico
 Indica que se desea ejecutar el algoritmo `genético`.
 
 
 
-###### --vision
+##### --vision
 Indica la cantidad de parcelas que el conejo puede observar desde su posición.  Este solo aplica para el algoritmo `A*`.
 
 
 
-###### --zanahorias
+##### --zanahorias
 Indica la cantidad de zanahorias que el conejo debe encontrar para terminar la ejecución del algoritmo `A*`.
 
 
 
-###### --derecha, --izquierda, --arriba o --abajo:
+##### --derecha, --izquierda, --arriba o --abajo:
 Indica hacia que lado tiene que avanzar el conejo inicialmente. Se debe indicar solo para el algoritmo `genético` .
 
 
 
-###### --individuos
+##### --individuos
 
 Cantidad de genes o individuos que el algoritmo `genético` debe mantener enn cada generación. 
 
 
 
-###### --tablero- inicial
+##### --tablero- inicial
 
 Nombre del archivo de texto que contiene el tablero inicial. Este archivo debe tener el siguiente una forma similar a la siguiente: 
 
@@ -145,31 +144,28 @@ Nombre del archivo de texto que contiene el tablero inicial. Este archivo debe t
 
 
 
-##### Importar en un archivo  
+#### Importar en un archivo  
 
 Para utilizar el módulo instalado se puede importar de la siguiente forma desde cualquier archivo `.py` o desde el shell de `Python`:
 
 > from tec.ic.ia.pc2.g03 import carrot_finder
 
-
-
-#### Acerca de 
+### Algoritmo de A* 
 
 ________________
 
-Integrantes del proyecto:
+El objetivo principal fue desarrollar un algoritmo de búsqueda que se basa en la técnica de A*, en un ambiente donde se cuenta con un tablero de juego, un conejo como punto de partida y una serie de zanahorias que cumpliran la función de metas u objetivos dentro del algoritmo a desarrollar. 
 
-| Nombre                    | Carné      |
-| ------------------------- | ---------- |
-| Brandon Dinarte Chavarría | 2015088894 |
-| Armando López Cordero     | 2015125414 |
-| Julian Salinas Rojas      | 2015114132 |
+#### _Detalles de implementación_
 
-Estudiantes de Ingeniería en Computación del Instituto Tecnológico de Costa Rica.
+#### _Detalle de la función de costo f(n)_
+##### _Costo acumulado_
+##### _Costo del heurístico_
 
 
-________________
 ### Algoritmos Genéticos
+
+________________
 
 El objetivo principal fue desarrollar un algoritmo genético que optimice la colocación de señales direccionales para que el conejo recorra el tablero.
 
@@ -314,3 +310,19 @@ Aspectos sobre el algoritmo de cruce se encuentran en el punto 6 de la sección 
 2. **Cruce por corte en dos puntos**. Cada arreglo padre se divide en tres, los dos puntos de división son los mismos para ambos, y se determinan mediantes dos números aleatorios sobre las posibles casillas. Luego se intercambian la parte central de un padre con su correspondiente parte del otro padre.
 
 ##### Resultados según política de cruce
+
+
+
+### Acerca de 
+
+________________
+
+Integrantes del proyecto:
+
+| Nombre                    | Carné      |
+| ------------------------- | ---------- |
+| Brandon Dinarte Chavarría | 2015088894 |
+| Armando López Cordero     | 2015125414 |
+| Julian Salinas Rojas      | 2015114132 |
+
+Estudiantes de Ingeniería en Computación del Instituto Tecnológico de Costa Rica.
