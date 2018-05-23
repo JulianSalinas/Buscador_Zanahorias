@@ -7,7 +7,7 @@ from model.genetic_algorithms import *
 """
 
 
-def mutation_chance_effect_on_scores():
+def mutation_chance_effect_on_scores(custom_seed=0):
     """
     La intención de esta función es ejecutar el algoritmo genético
     definiendo una semilla para controlar la aleatoriedad, para así realizar
@@ -31,7 +31,7 @@ def mutation_chance_effect_on_scores():
     mutation40 = list()
     mutation80 = list()
 
-    seed(5)
+    seed(custom_seed)
     for gen_number in range(100, 1100, 100):
         best_gen = run_carrot_finder(initial_direction='derecha',
                                      individuals=15,
@@ -55,7 +55,7 @@ def mutation_chance_effect_on_scores():
     print(mutation80)
 
 
-def mutation_chance_effect_on_speed():
+def mutation_chance_effect_on_speed(custom_seed=0):
     """
     La intención de esta función es ejecutar el algoritmo genético
     definiendo una semilla para controlar la aleatoriedad, para así realizar
@@ -79,7 +79,7 @@ def mutation_chance_effect_on_speed():
     mutation40 = list()
     mutation80 = list()
 
-    seed(2018)
+    seed(custom_seed)
     for gen_number in range(0, 10):
         best_gen, optimal_generation = run_carrot_finder(
             initial_direction='derecha',
@@ -135,7 +135,7 @@ def mutation_chance_effect_on_speed():
 # mutation 80: [4006, 4379, 4423, 4423, 4006, 4427, 4425, 4423, 3991, 4427]
 
 
-def cross_policy_effect_on_scores():
+def cross_policy_effect_on_scores(custom_seed=0):
     """
     La intención de esta función es ejecutar el algoritmo genético
     definiendo una semilla para controlar la aleatoriedad, para así realizar
@@ -159,7 +159,7 @@ def cross_policy_effect_on_scores():
     cross1point = list()
     cross2points = list()
 
-    seed(5)
+    seed(custom_seed)
     for gen_number in range(100, 900, 100):
         best_gen = run_carrot_finder(initial_direction='derecha',
                                      individuals=15,
@@ -183,7 +183,7 @@ def cross_policy_effect_on_scores():
     print(cross2points)
 
 
-def cross_policy_effect_on_speed():
+def cross_policy_effect_on_speed(custom_seed=0):
     """
     La intención de esta función es ejecutar el algoritmo genético
     definiendo una semilla para controlar la aleatoriedad, para así realizar
@@ -207,7 +207,7 @@ def cross_policy_effect_on_speed():
     cross1 = list()
     cross2 = list()
 
-    seed(2018)
+    seed(custom_seed)
     for gen_number in range(0, 10):
         best_gen, optimal_generation = run_carrot_finder(
             initial_direction='derecha',
