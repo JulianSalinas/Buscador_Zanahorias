@@ -1,5 +1,6 @@
 import numpy as np
 from random import randint, shuffle, seed
+from math import ceil
 
 
 class Gen:
@@ -22,11 +23,11 @@ class Gen:
 
 __print_frecuency__ = 100
 __print_per_generation__ = 3
+__weigths__ = {}
 
 
-def weights():
+def set_weights(mat_shape):
     # ['pc'] = picked carrots weight      (zanahorias pisadas)
-    # ['f'] = fall                        (salirse del tablero)
     # ['s'] = steps weight                (pisadas)
     # ['af'] = arrows found weight        (flechas pisadas)
     # ['anf'] = arrows not found weight   (flechas sin usar)
@@ -34,17 +35,22 @@ def weights():
     # ['180°t'] = 180 turn                (giro en 180 grados)
     # ['bfc'] = best first carrot         (una flecha inicial idónea)
 
-    _weights = {
-        'pc': 10000,
-        'f': -2500,
+    _scalar = mat_shape[0] * mat_shape[1]
+
+    global __weigths__
+    __weigths__ = {
+        'pc': round_up(_scalar, 1000),
         's': -1,
         'af': -5,
         'anf': -15,
         'apc': 10,
-        '180°t': -1000,
-        'bfc': 1500
+        '180°t': -(round_up(_scalar, 100)),
+        'bfc': round_up(_scalar, 500)
     }
-    return _weights
+
+
+def round_up(number, base=10):
+    return int(base * ceil(float(number)/base))
 
 
 def gen_in_list(gen, gen_list):
@@ -87,6 +93,7 @@ def initialization(initial_board, individuals, direction, fitness=True):
     :return: lista con los Genes de la generación inicial, shape de initial
     board
     """
+    set_weights(initial_board.shape)
     first_generation = list()
     content = initial_board.getA1().tolist()
     if fitness:
@@ -310,18 +317,17 @@ def eval_fitness(gen, direction, mat_shape):
     rabbit_fall = results[4]
     first_carrot_is_optimal = results[5]
 
-    pcw = picked_carrots * weights()['pc']
-    fw = weights()['f'] if rabbit_fall else 0
-    sw = steps * weights()['s']
+    pcw = picked_carrots * __weigths__['pc']
+    sw = steps * __weigths__['s']
     if rabbit_fall:
         sw = -sw
-    afw = arrows_found * weights()['af']
-    anfw = (arrow_count - arrows_found) * weights()['anf']
-    apcw = arrows_pointing * weights()['apc']
-    _180dtw = _180_degree_turns * weights()['180°t']
-    bfcw = first_carrot_is_optimal * weights()['bfc']
+    afw = arrows_found * __weigths__['af']
+    anfw = (arrow_count - arrows_found) * __weigths__['anf']
+    apcw = arrows_pointing * __weigths__['apc']
+    _180dtw = _180_degree_turns * __weigths__['180°t']
+    bfcw = first_carrot_is_optimal * __weigths__['bfc']
 
-    score = pcw + fw + sw + afw + anfw + apcw + _180dtw + bfcw
+    score = pcw + sw + afw + anfw + apcw + _180dtw + bfcw
 
     gen.set_score(score)
 
@@ -457,6 +463,8 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
                                             individuals=individuals,
                                             direction=initial_direction)
 
+    print('Pesos calculados: ', __weigths__)
+
     for generation_number in range(1, max_generations + 1):
 
         # Se obtiene la generación completa sin ordenar
@@ -494,7 +502,7 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
 starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -505,13 +513,13 @@ starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    ['Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
-seed(11)
-optimal = run_carrot_finder(initial_direction='izquierda',
+seed(18)
+optimal = run_carrot_finder(initial_direction='derecha',
                             individuals=10,
-                            max_generations=800,
+                            max_generations=400,
                             mutation_chance=80,
                             initial_board=starting_board,
                             selection_type=1,
