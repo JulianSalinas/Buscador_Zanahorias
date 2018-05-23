@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------
 
-import os
 import queue
+import shutil
 import numpy as np
-from file_utils import *
+from tec.ic.ia.pc2.model.file_utils import *
 
 
 # -----------------------------------------------------------------------------
@@ -593,13 +593,25 @@ def get_costos_direccion(costo_sucesores):
 
 #  ----------------------------------------------------------------------------
 
-def guardar_paso(pasos_actuales, matriz):
+def obtener_folder():
 
     folder = get_default_folder()
     folder = os.path.join(folder, "a_estrella")
 
+    # Borra el de la corrida anterior
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+
+    # Se crear el directorio si es necesario
     if not os.path.exists(folder):
         os.makedirs(folder)
+
+    return folder
+
+#  ----------------------------------------------------------------------------
+
+
+def guardar_paso(folder, pasos_actuales, matriz):
 
     filename = str(pasos_actuales).zfill(5) + ".txt"
     filename = os.path.join(folder, filename)
@@ -622,6 +634,8 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
     comerse el conejo para darse por satisfecho
     :return: No existe retorno
     """
+
+    folder = obtener_folder()
 
     pos_actual = calc_pos_conejo(matriz)
     pasos_actuales = 0
@@ -676,10 +690,10 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
               % (str(pasos_actuales).zfill(5), str(costo_izq).ljust(5),
                  str(costo_der).ljust(5), str(costo_arriba).ljust(5),
                  str(costo_abajo).ljust(5), mejor_movimiento))
-        guardar_paso(pasos_actuales, matriz)
+        guardar_paso(folder, pasos_actuales, matriz)
 
     print('PASO: %s \tFINAL' % (str(pasos_actuales).zfill(5)))
-    guardar_paso(pasos_actuales, matriz)
+    guardar_paso(folder, pasos_actuales, matriz)
 
 
 if __name__ == '__main__':
