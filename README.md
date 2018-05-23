@@ -168,11 +168,12 @@ Integrantes del proyecto:
 Estudiantes de Ingeniería en Computación del Instituto Tecnológico de Costa Rica.
 
 
-#### Algoritmos Genéticos
+________________
+### Algoritmos Genéticos
 
 El objetivo principal fue desarrollar un algoritmo genético que optimice la colocación de señales direccionales para que el conejo recorra el tablero.
 
-#### Detalles de implementación
+#### _Detalles de implementación_
 
 Previo a la implementación del algoritmo genético, fue necesario tomar algunas decisiones con respecto al comportamiento del mismo. Lo anterior dado que el enunciado del proyecto no podría ni debería cubrir todos los detalles relacionados al algoritmo. Dichos detalles se enumeran a continuación:
 
@@ -189,7 +190,7 @@ Previo a la implementación del algoritmo genético, fue necesario tomar algunas
 
 6. A pesar de que el tablero utilizado se considera una matriz, para apegarse al estándar de algoritmos genéticos, este se transforma a un arreglo unidimensional en ocasiones, según la necesidad. Para el recorrido del tablero, se hace con forma de matriz, pero para el cruce se utiliza la representación como arreglo unidimensional. Esto pues así se facilita el corte en cualquier celda, y no necesariamente por filas o columnas.
 
-#### Detalle de la función de aptitud
+#### _Detalle de la función de aptitud_
 
 La función de aptitud es el componente principal que define los resultados obtenidos con el algoritmo genético. A continuación, se mencionan los aspectos tomados en cuenta para su definición.
 
@@ -211,15 +212,13 @@ Como detalle importante, se toma en cuenta el tamaño del tablero para escalar a
 
 7. **Mejor zanahoria inicial**. Se otorga un peso positivo extra al tablero, si la primer zanahoria recogida es la más cercana (utilizando la distancia lineal desde el conejo a cada zanahoria). Esto con el fin de que al menos la primer zanahoria recogida genere la menor cantidad de pasos posibles, en caso de ser posible.
 
-#### Tasa de mutación
+#### _Tasa de mutación_
 
 La tasa de mutación es un número entre 0 y 100, que define el porcentaje o probabilidad con que mutan los resultados de un cruce. El algoritmo de una mutación se aborda en el punto 2 de los detalles de implementación. 
 
 ##### Resultados según tasa de mutación
 
-Para efectos de las pruebas del algoritmo se utilizaron porcentajes de 40% y 80% de mutación, para la comparación del efecto que tiene duplicar la mutación de genes. 
-
-Todos los análisis se hicieron sobre el mismo tablero de juego. Representado con la siguiente imagen.
+Para efectos de las pruebas del algoritmo se utilizaron porcentajes de 40% y 80% de mutación, para la comparación del efecto que tiene duplicar la mutación de genes. Todos los análisis se hicieron sobre el mismo tablero de juego. Representado con la siguiente imagen.
 
 ![tablero](/imgs/geneticos/tablero_analisis.png "Tablero para los análisis")
 
@@ -267,6 +266,44 @@ Según la métrica anterior, un 40% de probabilidad de mutación genera puntajes
 ***Conclusiones***
 1. Según las pruebas realizadas, un porcentaje más bajo de mutación puede significar que el algoritmo no será capaz de brindar un acomodo de flechas suficientemente bueno para comerse todas las zanahorias.
 2. Según la definición de los pesos que afectan el puntaje de aptitud, es difícil definir si una tasa de mutación alta se mejor que una baja. Pero se logra rescatar que ante una tasa de mutación alta, la creación de genes es mayor, lo cual significa un incremento considerable en la cantidad de recursos del sistema a utilizar. Por lo tanto, existe una relación entre cantidad de generaciones y tasa de mutación, que debe balancearse con respecto a la cantidad de recursos por gastar.
+
+###### **Efecto en la velocidad para encontrar la solución**
+
+Para obtener los resultados descritos en esta sección, se debe importar la función `mutation_chance_effect_on_speed(semilla_del_aleatorio)`
+> from tec.ic.ia.pc2.model.ga_analysis import mutation_chance_effect_on_speed
+
+Se realizaron 10 ejecuciones para cada porcentaje de mutación (40% y 80%). Los resultados obtenidos son el mejor puntaje obtenido y el número de generación en el que se obtuvo. 
+
+Para todas las ejecuciones se utilizaron los mismos parámetros, a excepción del porcentaje que mutación que varía entre ambas tablas.
+
+> initial_direction='derecha',
+            individuals=15,
+            max_generations=550,
+            cross_type=1
+
+**Función ejecutada**
+> mutation_chance_effect_on_speed(2018)
+
+**Resultados**: 
+
+| Mutación | 40% | | Mutación | 80% |
+| ------------ | --- | --- | --- | --- |
+| **Puntaje** | **N° Generación** | | **Puntaje** | **N° Generación** |
+| 4427 | 40  |  | 4522 | 52  | 
+| 4427 | 77  |  | 3991 | 70  | 
+| 4522 | 79  |  | 4507 | 85  | 
+| 4423 | 167 |  | 3980 | 160 | 
+| 4423 | 226 |  | 3993 | 179 | 
+| 3989 | 227 |  | 4522 | 236 |
+| 3980 | 254 |  | 4370 | 295 |
+| 4318 | 390 |  | 3982 | 305 | 
+| 4507 | 428 |  | 3996 | 335 | 
+| 4489 | 482 |  | 4427 | 393 |
+
+***Conclusiones***
+1. Las pruebas realizadas muestran puntajes relativamente similares, por lo que resulta útil para la comparación entre el número de generación donde se origina el resultado.
+2. En 2 ocasiones, la mutación con 40% de probabilidad dio como resultado soluciones en generaciones mayores a la 400. Por lo que aparenta ser que un mayor pocentaje de mutación puede disminuir en general la cantidad de generaciones necesarias.
+3. Para soluciones obtenidas en generaciones menores a la 400, los resultados son bastante uniformes, por lo que aparenta ser que la diferencia radica en lo mencionado en el punto 2 únicamente.
 
 #### Política de cruce
 
