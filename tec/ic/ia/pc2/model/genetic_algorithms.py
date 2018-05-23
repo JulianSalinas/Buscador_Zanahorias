@@ -393,12 +393,11 @@ def get_children(parent1, parent2, cross_type, direction, mat_shape,
     return children
 
 
-def generate(parents, selection_type, direction, mat_shape,
+def generate(parents, direction, mat_shape,
              mutation_chance, cross_type):
     """
     Realiza el cruce de los genes según dos tipos de selección diferente
     :param parents: lista de Genes para cruzar
-    :param selection_type: 1 -> random, 2 -> parejas en orden
     :param direction: dirección inicial del conejo para evaluar fitness
     :param mat_shape: dimensiones de la matriz para evaluar fitness
     :param mutation_chance: probabilidad de 0 a 100 de mutación
@@ -408,27 +407,16 @@ def generate(parents, selection_type, direction, mat_shape,
     resulting_generation = list()
     resulting_generation += parents
 
-    if selection_type == 1:
-        index_list = list(range(0, len(parents)))
-        shuffle(index_list)
+    index_list = list(range(0, len(parents)))
+    shuffle(index_list)
 
-        for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
-            children = get_children(parents[gen1_idx], parents[gen2_idx],
-                                    cross_type, direction, mat_shape,
-                                    mutation_chance)
+    for gen1_idx, gen2_idx in zip(*[iter(index_list)] * 2):
+        children = get_children(parents[gen1_idx], parents[gen2_idx],
+                                cross_type, direction, mat_shape,
+                                mutation_chance)
 
-            resulting_generation += [child for child in children if not
-                                     gen_in_list(child, resulting_generation)]
-
-    elif selection_type == 2:
-        _range = range(0, int(len(resulting_generation) / 2))
-        for i in _range:
-            children = get_children(parents[i * 2], parents[i * 2 + 1],
-                                    cross_type, direction, mat_shape,
-                                    mutation_chance)
-
-            resulting_generation += [child for child in children if not
-                                     gen_in_list(child, resulting_generation)]
+        resulting_generation += [child for child in children if not
+                                 gen_in_list(child, resulting_generation)]
 
     return resulting_generation
 
@@ -446,8 +434,7 @@ def replacement(generation, individuals):
 
 
 def run_carrot_finder(initial_direction, individuals, max_generations,
-                      mutation_chance, initial_board, selection_type=1,
-                      cross_type=1):
+                      mutation_chance, initial_board, cross_type=1):
 
     initial_direction = direction_to_arrow()[initial_direction]
 
@@ -468,7 +455,6 @@ def run_carrot_finder(initial_direction, individuals, max_generations,
                               direction=initial_direction,
                               mutation_chance=mutation_chance,
                               mat_shape=dimensions,
-                              selection_type=selection_type,
                               cross_type=cross_type)
 
         # Se seleccionan los mejores
@@ -515,11 +501,10 @@ starting_board = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ']]
 starting_board = np.matrix(starting_board, object)
-seed(18)
+seed(20)
 optimal = run_carrot_finder(initial_direction='izquierda',
                             individuals=15,
                             max_generations=500,
                             mutation_chance=80,
                             initial_board=starting_board,
-                            selection_type=1,
                             cross_type=1)[0]
