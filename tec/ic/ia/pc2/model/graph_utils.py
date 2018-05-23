@@ -17,8 +17,3 @@ def show_graphics(result_list1, list1_tag,
     axes[1].set_xlabel(common_tag, fontsize=12)
 
     plt.show()
-
-
-show_graphics(rl1, 'Mutación 40%',
-              rl2, 'Mutación 80%',
-              'Generaciones')
