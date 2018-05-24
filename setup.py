@@ -17,7 +17,7 @@ setup(
     download_url="https://github.com/bdinarte/SimuladorVotantes/archive/v1.0.0.tar.gz",
     install_requires=['pandas', 'numpy'],
     python_requires='>=3',
-    include_package_data=True,
+    include_package_data=False,
     package_data={"tec": ["*.txt", "*.csv", ".xlsx"]},
     classifiers=[],
 )
