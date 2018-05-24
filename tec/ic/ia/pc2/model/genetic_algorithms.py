@@ -2,10 +2,10 @@
 import shutil
 import webbrowser
 import numpy as np
-from random import randint, shuffle, seed
 from math import ceil
-from tec.ic.ia.pc2.model.file_utils import *
 from time import time
+from random import randint, shuffle, seed
+from tec.ic.ia.pc2.model.file_utils import *
 
 
 class Gen:

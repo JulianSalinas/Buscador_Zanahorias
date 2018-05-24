@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="tec.ic.ia.pc2.g02",
+    name="tec.ic.ia.pc2.g03",
     packages=find_packages(),
     description="Inteligencia Artificial: Proyecto Corto II",
     long_description="Buscador de Zanahorias usando Algoritmos genéticos y búsqueda A*",
@@ -15,7 +15,7 @@ setup(
     keywords=['tec', 'ic', 'ia', "g03", "buscador", "zanahorias"],
     url='https://github.com/JulianSalinas/Buscador_Zanahorias',
     download_url="https://github.com/bdinarte/SimuladorVotantes/archive/v1.0.0.tar.gz",
-    install_requires=['pandas', 'numpy', 'pytest'],
+    install_requires=['pandas', 'numpy'],
     python_requires='>=3',
     include_package_data=True,
     package_data={"tec": ["*.txt", "*.csv", ".xlsx"]},

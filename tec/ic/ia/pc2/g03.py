@@ -23,7 +23,7 @@ def run(args):
     if args.a_estrella:
         return a_estrella(initial_board, args.vision[0], args.zanahoria[0])
 
-    else:
+    elif args.genetico:
 
         if args.derecha:
             initial_direction = 'derecha'
