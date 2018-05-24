@@ -491,13 +491,104 @@ Para todas las ejecuciones se utilizaron los mismos parámetros, a excepción de
 
 Aspectos sobre el algoritmo de cruce se encuentran en el punto 6 de la sección de detalles de implementación. Se implementaron dos políticas de cruce diferentes.
 
-1. **Cruce por corte en un punto**. Cada arreglo padre se divide en dos, el punto de división es el mismo para ambos, y se determina mediante un número aleatorio sobre las posibles casillas. Luego se intercambian una parte de un padre con su correspondiente parte del otro padre.
+1. **Cruce por corte en un punto**. Cada arreglo padre se divide en dos, el punto de división es el mismo para ambos, y se determina mediante un número aleatorio sobre las posibles casillas. Luego se intercambian una parte de un padre con su correspondiente parte del otro padre. 
+
+![cruce1punto](https://upload.wikimedia.org/wikipedia/commons/d/dd/Computational.science.Genetic.algorithm.Crossover.One.Point.svg "Cruce con corte en un punto")
+Imagen recuperada de: https://upload.wikimedia.org/wikipedia/commons/d/dd/Computational.science.Genetic.algorithm.Crossover.One.Point.svg
 
 2. **Cruce por corte en dos puntos**. Cada arreglo padre se divide en tres, los dos puntos de división son los mismos para ambos, y se determinan mediantes dos números aleatorios sobre las posibles casillas. Luego se intercambian la parte central de un padre con su correspondiente parte del otro padre.
 
+![cruce2puntos](https://upload.wikimedia.org/wikipedia/commons/4/47/Computational.science.Genetic.algorithm.Crossover.Two.Point.svg "Cruce con corte en dos puntos")
+Imagen recuperada de: https://upload.wikimedia.org/wikipedia/commons/4/47/Computational.science.Genetic.algorithm.Crossover.Two.Point.svg
+
 ##### Resultados según política de cruce
 
+Para efectos de las pruebas del algoritmo se utilizaron las politícas de cruce con corte en uno y dos puntos. Todos los análisis se hicieron sobre el mismo tablero de juego. Representado con la siguiente imagen.
 
+![tablero2](/imgs/geneticos/tablero_analisis.png "Tablero para los análisis")
+
+###### **Efecto en puntajes de aptitud**
+
+Para obtener los resultados descritos en esta sección, se debe importar la función `cross_policy_effect_on_scores(semilla_del_aleatorio)`
+> from tec.ic.ia.pc2.model.ga_analysis import cross_policy_effect_on_scores
+
+Como **métrica** de evaluación, se calcula la diferencia resultante al restarle, a la suma de los puntajes obtenidos para el cruce con corte en un punto, la suma de los puntajes obtenidos para cruce con corte en dos puntos.
+
+1. Se establece la semilla del random = 5.
+    `cross_policy_effect_on_scores(5)`
+    
+![cp5](/imgs/geneticos/cross_score_5.png "Cruce -> Semilla = 5")
+
+    Diferencia obtenida: -1612
+    Diferencia obtenida sin contar la peor solución: -657
+Según la métrica anterior, un corte en dos puntos genera puntajes de aptitud más altos por 657 puntos. Similar a lo que sucedía con la mutación, el corte en un punto no fue capaz de recolectar todas las zanahorias para 1 de las 8 ejecuciones realizadas. Esto podría ser producto del azar o estar relacionado a la política de cruce directamente.
+
+2. Se establece la semilla del random = 1996.
+    `cross_policy_effect_on_scores(1996)`
+    
+![cp1996](/imgs/geneticos/cross_score_1996.png "Cruce -> Semilla = 1996")
+
+    Diferencia obtenida: 525
+Según la métrica anterior, un corte en un solo punto genera puntajes de aptitud más altos por 525 puntos. 
+
+3. Se establece la semilla del random = 2011.
+    `cross_policy_effect_on_scores(2011)`
+    
+![cp2011](/imgs/geneticos/cross_score_2011.png "Cruce -> Semilla = 2011")
+
+    Diferencia obtenida: -1201
+    Diferencia obtenida sin contar la peor solución: -352
+Según la métrica anterior, un corte en dos puntos genera puntajes de aptitud más altos por 352 puntos. Hay que destacar que nuevamente, un corte en un solo punto no fue suficiente para brindar una solución que se coma todas las zanahorias en 100 generaciones.
+
+4. Se establece la semilla del random = 2018.
+    `cross_policy_effect_on_scores(2018)`
+    
+![cp2018](/imgs/geneticos/cross_score_2018.png "Cruce -> Semilla = 2018")
+
+    Diferencia obtenida: -839
+Según la métrica anterior, un corte en dos puntos genera un resultado de aptitud más alto por 839 puntos. Nuevamente el corte en un solo punto no generó una solución que se coma todas las zanahorias, pero esta vez a nivel de 400 generaciones. 
+
+***Conclusiones***
+1. Según las pruebas realizadas, un corte en un solo punto en el arreglo del gen puede significar que el algoritmo no será capaz de brindar un acomodo de flechas suficientemente bueno para comerse todas las zanahorias.
+2. Parece ser que en esta ocasión a diferencia de los porcentajes de mutación, si existe una ventaja clara en usar la segunda política de cruce definida por sobre la primera. El corte en dos puntos del arreglo que representa el gen, parece generar mejores resultados que el corte en un único punto.
+
+###### **Efecto en la velocidad para encontrar la solución**
+
+Para obtener los resultados descritos en esta sección, se debe importar la función `cross_policy_effect_on_speed(semilla_del_aleatorio)`
+> from tec.ic.ia.pc2.model.ga_analysis import cross_policy_effect_on_speed
+
+Se realizaron 10 ejecuciones para cada política de cruce. Los resultados obtenidos son el mejor puntaje obtenido y el número de generación en el que se obtuvo. 
+
+Para todas las ejecuciones se utilizaron los mismos parámetros, a excepción de la política de cruce que varía entre ambas tablas.
+
+> initial_direction='derecha',
+            individuals=15,
+            max_generations=550,
+            mutation_chance=50
+
+**Función ejecutada**
+> cross_policy_effect_on_speed(2018)
+
+**Resultados**: 
+
+| Política de Cruce | Corte en 1 Punto | | Política de Cruce  | Corte en 2 Puntos |
+| ------------ | --- | --- | --- | --- |
+| **Puntaje** | **N° Generación** | | **Puntaje** | **N° Generación** |
+| 4425 | 27  | | 4427 | 76  |
+| 4425 | 39  | | 4427 | 133 | 
+| 4425 | 39  | | 4427 | 135 |
+| 4425 | 140 | | 3908 | 154 |
+| 3976 | 161 | | 4019 | 161 |
+| 4425 | 186 | | 4423 | 163 | 
+| 4427 | 203 | | 4522 | 192 |
+| 4391 | 227 | | 4520 | 228 | 
+| 3910 | 237 | | 4427 | 295 |
+| 3984 | 248 | | 4425 | 329 |
+
+***Conclusiones***
+1. Las pruebas realizadas muestran puntajes relativamente similares, por lo que resulta útil para la comparación entre el número de generación donde se origina el resultado.
+2. El corte en 1 punto dio la solución final en generaciones muy bajas, osea pocas iteraciones, en 3 ocasiones. Las 3 ocasiones están por debajo de la generación 50. Mientras que la única vez que el cruce en 2 puntos dio una solución en una generación menor a 100, apenas logró darla en la 76. Viendo esto, parece que la política de cruce con corte en 1 punto parece alcanzar la solución en pocas generaciones con mayor frecuencia.
+3. Hay que destacar que el corte en un punto generó puntajes de aptitud menores a 4000 en 3 ocasiones, aunque claramente cercanos, esto puede deberse al peso relacionado a conseguir la primer zanahoria más cercana, por lo que podría decirse que el cruce en dos puntos tiende a conseguir la mejor primer zanahoria con más frecuencia, lo cual mejora el puntaje de la solución.
 
 ### Acerca de 
 
@@ -512,3 +603,4 @@ Integrantes del proyecto:
 | Julian Salinas Rojas      | 2015114132 |
 
 Estudiantes de Ingeniería en Computación del Instituto Tecnológico de Costa Rica.
+>>>>>>> 70fb11b14a94ab6b0b56e029b9557973d97d9625
