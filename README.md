@@ -1,6 +1,7 @@
 # Buscador_Zanahorias
 
 
+
 ## Proyecto Corto II: Inteligencia Artificial
 
 El propósito es aplicar dos tipos de algoritmos de búsqueda a un determinado problema. Para simplificar la explicación del mismo, se abstrae mediante el uso de un conejo que debe encontrar una cantidad determinada de zanahorias dentro del huerto. 
@@ -13,13 +14,10 @@ El propósito es aplicar dos tipos de algoritmos de búsqueda a un determinado p
 
 2. Zanahoria:  Posición `(i, j)` de la matriz que contiene la letra `Z`.
 
-3. Flecha: Posición `(i, j)` de la matriz que contiene `>`, `<`, `A`, o `V`.
+3. Flecha: Posición `(i, j)` de la matriz que contiene `>`, `<`, `A`, o `V`. 
 
-   
 
 El primer algoritmo es `A*`. En este el conejo debe encontrar las zanahorias moviéndose con base en una heurística aplicada a un rango de visión, es decir, con una cantidad delimitada de  parcelas. El objetivo es que la heurística permita al conejo encontrar las zanahorias que requiere en la menor cantidad de pasos. 
-
-
 
 El segundo se trata de un algoritmo `genético`. En este se limita al conejo a moverse en una sola dirección. Para que pueda girar debe encontrar una flecha en la parcela que le indique hacia donde. El propósito es que el algoritmo coloque flechas en el huerto para que el conejo pueda moverse y encontrar todas las zanahorias. En caso de que se generen varias soluciones para encontrarlas todas, se seleccionan las que resuelven el problema en la menor cantidad de pasos. 
 
@@ -36,11 +34,11 @@ ________________
 Es necesario contar con `Python 3`  para poder realizar la instalación. Además, se requieren algunas dependecias que se pueden instalar utilizando `pip`: 
 
 1. Se abre un terminal con permisos de administrador
-2. Se ejecutan los siguiente comandos 
+2. Se ejecutan los siguientes comandos 
 
-> pip install numpy
+> sudo pip3 install numpy
 >
-> pip install pandas 
+> sudo pip3 install pandas 
 
 
 
@@ -52,17 +50,17 @@ Es necesario contar con `Python 3`  para poder realizar la instalación. Además
 
 3. Se ejecuta el siguientes comandos: 
 
-> python setup.py install 
+> sudo python3 setup.py install 
 
 
 
-#### Instalación utilizando pip install 
+#### Instalación utilizando pip 
 
-1. Se debe abrir una terminal con permiso de administrador 
+1. Se debe abrir una terminal con permisos de administrador 
 
 2. Se ejecuta el siguiente comando: 
 
-> pip install tec.ic.ia.pc2 
+> sudo pip3 install tec.ic.ia.pc2 
 
 
 
@@ -70,15 +68,11 @@ Es necesario contar con `Python 3`  para poder realizar la instalación. Además
 
 _____
 
-
-
 #### Ejecución desde consola 
 
 Una vez instalado se pueden utilizar el algoritmo `A*` de la siguiente forma: 
 
 > python main.py  ­­--­­a­-estrella --tablero-­inicial entrada.txt ­­--vision n --­­zanahorias n
-
-
 
 El algoritmo `genético` se utiliza mediante el comando
 
@@ -88,48 +82,25 @@ El algoritmo `genético` se utiliza mediante el comando
 
 #### Parámetros
 
-
-
-##### --a-estrella
-Indica que se desea ejecutar el algoritmo `A*`. 
-
-
-
-##### --genetico
-Indica que se desea ejecutar el algoritmo `genético`.
-
-
-
-##### --vision
-Indica la cantidad de parcelas que el conejo puede observar desde su posición.  Este solo aplica para el algoritmo `A*`.
-
-
-
-##### --zanahorias
-Indica la cantidad de zanahorias que el conejo debe encontrar para terminar la ejecución del algoritmo `A*`.
-
-
-
-##### --derecha, --izquierda, --arriba o --abajo:
-Indica hacia que lado tiene que avanzar el conejo inicialmente. Se debe indicar solo para el algoritmo `genético` .
-
-
-
-##### --individuos
-
-Cantidad de genes o individuos que el algoritmo `genético` debe mantener enn cada generación. 
-
-
-
-##### --tablero- inicial
+1. **--a-estrella**: Indica que se desea ejecutar el algoritmo `A*`. 
+2. **--genetico**: Indica que se desea ejecutar el algoritmo `genético`.
+3. **--vision**: Indica la cantidad de parcelas que el conejo puede observar desde su posición.  Este solo aplica para el algoritmo `A*`.
+4. **--zanahoria**: Indica la cantidad de zanahorias que el conejo debe encontrar para terminar la ejecución del algoritmo `A*`.
+5. **--derecha, --izquierda, --arriba o --abajo**: Indica hacia que lado tiene que avanzar el conejo inicialmente. Se debe indicar solo para el algoritmo `genético` .
+6. **--individuos**: Indica de genes o individuos que el algoritmo `genético` debe mantener enn cada generación. 
+7. **--generaciones**: Indica cúantas generaciones como máximo debe realizar el algoritmo `genético`. 
+8. **--politica**: Indica que politica de cruce se debe utilizar en el algoritmo `genético`. Se especifica `1` para el cruce con `corte en un punto` y `2` para cruces con `corte en dos puntos`. 
+9. **--mutaciones**: Indica por medio de un `número de 0 a 100`, cuál es la probabilidad de mutación para un individuo. 
+10. **--semilla**: Si se desea obtener los mismos resultados al usar los mismos parámetros, se debe usar una misma semilla para las distintas corridas. 
+11. **--tablero- inicial**:
 
 Nombre del archivo de texto que contiene el tablero inicial. Este archivo debe tener el siguiente una forma similar a la siguiente: 
 
-|      |      |      |
-| ---- | ---- | ---- |
-| C    |      | Z    |
-|      | Z    |      |
-|      |      | Z    |
+| <blanco> | <blanco> | <blanco> | <linea> |
+| -------- | -------- | -------- | ------- |
+| C        | <blanco> | Z        | <linea> |
+| <blanco> | Z        | <blanco> | <linea> |
+| <blanco> | <blanco> | Z        | <linea> |
 
 
 
@@ -149,6 +120,8 @@ Nombre del archivo de texto que contiene el tablero inicial. Este archivo debe t
 Para utilizar el módulo instalado se puede importar de la siguiente forma desde cualquier archivo `.py` o desde el shell de `Python`:
 
 > from tec.ic.ia.pc2.g03 import carrot_finder
+
+
 
 ### Algoritmo de A* 
 
@@ -176,6 +149,7 @@ Entonces, la función de costo para desplazar el conejo a una posición determin
     f(n) = g(n) + h(n)
 
  
+
 ##### _Costo acumulado_
 Tal como se menciona en el instructivo del proyecto, el acumulado hasta un punto específico en la ejecución del algoritmo será simplemente la cantidad de pasos que ha dado el conejo.
 Dejando así que dicho costo sea simplente un contador de "pasos actuales", y por ende no se diseña ninguna función para representarle.
@@ -183,7 +157,7 @@ Dejando así que dicho costo sea simplente un contador de "pasos actuales", y po
 La fórmula de este costo estaría dada por:
     
     g(n) = Cantidad de Pasos Actuales
-   
+
 ##### _Costo del heurístico_
 
 ###### _Consideraciones del Instructivo_
@@ -208,7 +182,7 @@ implementadas en la función.
     En este caso, el costo que se le aplica a un sucesor es básicamente la distancia más corta hacia
     una zanahoria que se encuentre dentro de su rango de visión. A continuación se muestra el llamado a la función
     que se encuentra en el código para el cálculo del heurístico.  
- 
+
         costo_sucesores = castigar_distancia(sucesores, zanahorias, pasos_actuales)
     
     Para poner un ejemplo de este cálculo se presenta la siguiente imagen:
@@ -234,7 +208,7 @@ implementadas en la función.
         Abajo [7, 1]    -> Zanahoria [10, 0]  -> Costo = 4
 
 2. Aplicación de un costo según la región que tenga más zanahorias
-    
+  
     En este caso, el costo que se le aplica a un sucesor es básicamente si 
     su dirección cuenta con menos zanahorias que la dirección opuesta.
     Es decir, que solamente se aplicará un costo a dos direcciones (Izquierda/Derecha y Arriba/Abajo).
@@ -243,7 +217,7 @@ implementadas en la función.
     zanahorias agrupadas cumplen con la cantidad que el conejo ocupa comerse para darse por satisfecho.
     Esto último se decidió, debido a que la búsqueda no era tan efectiva si se le daba prioridad a la región con más
     zanahorias.  
-     
+    
     A continuación se muestra el llamado a la función
     que se encuentra en el código para el cálculo del heurístico.
           
@@ -269,7 +243,7 @@ implementadas en la función.
     **NOTA:** El costo agregado a la dirección con menos zanahorias es de **3**. 
 
 3. Aplicación de un costo si el sucesor va a un espacio desconocido
-    
+  
     Este costo es agregado al sucesor que se dirija hacia una posición fuera del tablero 
     de juego. 
     
@@ -286,7 +260,7 @@ implementadas en la función.
     **NOTA:** El costo agregado para esta penalización es de **100**.
     
 4. Aplicación de un costo a la dirección del padre, si en la misma no existía zanahoria
-    
+  
     Este costo es agregado a la dirección de la que provenía el conejo si en esta no existía una zanahoria.
     Lo que se pretende, es evitar que el conejo quiera devolverse a una posicion ya explorada, donde no existía
     ninguna meta.
@@ -303,7 +277,8 @@ En resumen, la función del heurístico podría resumirse en:
     
     h(n) =  castigar_distancia(n) + castigar_emisferios(n) + castigar_esp_desconocido(n) + castigar_direccion_padre(n)
 
-    
+
+​    
 #### _Análisis de resultados_
 Para el análisis de resultados, se decide mostrar la ejecución de dos tableros de dimensión 25x25 y 10 zanahorias,
 el cual se utiliza en 20 pruebas con diferentes rangos de visión y cantidad de zanahorias
@@ -326,7 +301,7 @@ __Prueba Número 1__
 
     Tal como se puede apreciar en el siguiente gráfico, el comportamiento en función de costo disminuye
 conforme el rango de visión aumenta y también cuando la cantidad de zanahorias para darse por satisfecho disminuyen.
- 
+
 ![graf1](/imgs/a_estrella/graf1.PNG "Gráfico de prueba 1")
 
 
@@ -471,15 +446,15 @@ Para todas las ejecuciones se utilizaron los mismos parámetros, a excepción de
 | Mutación | 40% | | Mutación | 80% |
 | ------------ | --- | --- | --- | --- |
 | **Puntaje** | **N° Generación** | | **Puntaje** | **N° Generación** |
-| 4427 | 40  |  | 4522 | 52  | 
-| 4427 | 77  |  | 3991 | 70  | 
-| 4522 | 79  |  | 4507 | 85  | 
-| 4423 | 167 |  | 3980 | 160 | 
-| 4423 | 226 |  | 3993 | 179 | 
+| 4427 | 40  |  | 4522 | 52  |
+| 4427 | 77  |  | 3991 | 70  |
+| 4522 | 79  |  | 4507 | 85  |
+| 4423 | 167 |  | 3980 | 160 |
+| 4423 | 226 |  | 3993 | 179 |
 | 3989 | 227 |  | 4522 | 236 |
 | 3980 | 254 |  | 4370 | 295 |
-| 4318 | 390 |  | 3982 | 305 | 
-| 4507 | 428 |  | 3996 | 335 | 
+| 4318 | 390 |  | 3982 | 305 |
+| 4507 | 428 |  | 3996 | 335 |
 | 4489 | 482 |  | 4427 | 393 |
 
 ***Conclusiones***
@@ -575,13 +550,13 @@ Para todas las ejecuciones se utilizaron los mismos parámetros, a excepción de
 | ------------ | --- | --- | --- | --- |
 | **Puntaje** | **N° Generación** | | **Puntaje** | **N° Generación** |
 | 4425 | 27  | | 4427 | 76  |
-| 4425 | 39  | | 4427 | 133 | 
+| 4425 | 39  | | 4427 | 133 |
 | 4425 | 39  | | 4427 | 135 |
 | 4425 | 140 | | 3908 | 154 |
 | 3976 | 161 | | 4019 | 161 |
-| 4425 | 186 | | 4423 | 163 | 
+| 4425 | 186 | | 4423 | 163 |
 | 4427 | 203 | | 4522 | 192 |
-| 4391 | 227 | | 4520 | 228 | 
+| 4391 | 227 | | 4520 | 228 |
 | 3910 | 237 | | 4427 | 295 |
 | 3984 | 248 | | 4425 | 329 |
 
@@ -603,4 +578,3 @@ Integrantes del proyecto:
 | Julian Salinas Rojas      | 2015114132 |
 
 Estudiantes de Ingeniería en Computación del Instituto Tecnológico de Costa Rica.
->>>>>>> 70fb11b14a94ab6b0b56e029b9557973d97d9625
