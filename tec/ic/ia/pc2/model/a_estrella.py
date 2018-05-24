@@ -390,7 +390,8 @@ def castigar_distancia(sucesores, zanahorias, pasos_actuales):
 
 # -----------------------------------------------------------------------------
 
-def castigar_emisferios(matriz, costo_sucesores, pos_actual, cant_zanahorias):
+def castigar_emisferios(matriz, costo_sucesores, pos_actual, cant_zanahorias,
+                        rango_vision):
     """
     Funcion utilizada para castigar las direcciones donde se encuentran menos
     zanahorias
@@ -403,6 +404,8 @@ def castigar_emisferios(matriz, costo_sucesores, pos_actual, cant_zanahorias):
     antes de que se desplace
     :param cant_zanahorias: es l cantidad de zanahorias que le faltan por comer
     al conejo para verse satisfecho
+    :param rango_vision: es el rango de vision que tiene el conejo sobre el
+    tablero
     :return: costo de cada uno de los posibles sucesores, con su respectiva
     posicion y etiqueta de direccion
     """
@@ -410,29 +413,33 @@ def castigar_emisferios(matriz, costo_sucesores, pos_actual, cant_zanahorias):
     m_izq, m_der = split_vertical_matriz(matriz, pos_actual)
     m_arriba, m_abajo = split_horizontal_matriz(matriz, pos_actual)
 
-    zanahorias_izq = calc_pos_simbolo(m_izq, 'Z')
-    zanahorias_der = calc_pos_simbolo(m_der, 'Z')
-    zanahorias_abajo = calc_pos_simbolo(m_abajo, 'Z')
-    zanahorias_arriba = calc_pos_simbolo(m_arriba, 'Z')
+    matriz = np.matrix(matriz)
+    shape_matriz = matriz.shape
 
-    for i in costo_sucesores:
-        dir_sucesor = i[1][1]
-        if dir_sucesor == 'IZQUIERDA':
-            if len(zanahorias_izq) < len(zanahorias_der) \
-                    == cant_zanahorias:
-                i[0] += 3
-        elif dir_sucesor == 'DERECHA':
-            if len(zanahorias_der) < len(zanahorias_izq) \
-                    == cant_zanahorias:
-                i[0] += 3
-        elif dir_sucesor == 'ABAJO':
-            if len(zanahorias_abajo) < len(zanahorias_arriba) \
-                    == cant_zanahorias:
-                i[0] += 3
-        else:
-            if len(zanahorias_arriba) < len(zanahorias_abajo) \
-                    == cant_zanahorias:
-                i[0] += 3
+    if shape_matriz[1]//3 <= rango_vision >= shape_matriz[0]//3:
+        zanahorias_izq = calc_pos_simbolo(m_izq, 'Z')
+        zanahorias_der = calc_pos_simbolo(m_der, 'Z')
+        zanahorias_abajo = calc_pos_simbolo(m_abajo, 'Z')
+        zanahorias_arriba = calc_pos_simbolo(m_arriba, 'Z')
+
+        for i in costo_sucesores:
+            dir_sucesor = i[1][1]
+            if dir_sucesor == 'IZQUIERDA':
+                if len(zanahorias_izq) < len(zanahorias_der) \
+                        == cant_zanahorias:
+                    i[0] += 3
+            elif dir_sucesor == 'DERECHA':
+                if len(zanahorias_der) < len(zanahorias_izq) \
+                        == cant_zanahorias:
+                    i[0] += 3
+            elif dir_sucesor == 'ABAJO':
+                if len(zanahorias_abajo) < len(zanahorias_arriba) \
+                        == cant_zanahorias:
+                    i[0] += 3
+            else:
+                if len(zanahorias_arriba) < len(zanahorias_abajo) \
+                        == cant_zanahorias:
+                    i[0] += 3
 
     return costo_sucesores
 
@@ -550,8 +557,9 @@ def calcular_heuristico(matriz, sucesores, zanahorias, pasos_actuales,
     costo_sucesores = castigar_distancia(sucesores, zanahorias, pasos_actuales)
 
     # Castigamos segun la region que tenga mas zanahorias
-    costo_sucesores = castigar_emisferios(matriz_visible, costo_sucesores,
-                                          pos_actual, cant_zanahorias)
+    # costo_sucesores = castigar_emisferios(matriz_visible, costo_sucesores,
+    #                                       pos_actual, cant_zanahorias,
+    #                                       rango_vision)
 
     # Castigamos si el sucesor va a un espacio desconocido
     costo_sucesores = castigar_esp_desconocido(costo_sucesores, forma_matriz)
@@ -682,6 +690,7 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
             get_costos_direccion(costo_sucesores)
 
         mejor_movimiento = mejor_sucesor[1][1]
+
         print('PASO: %s '
               '\tIZQUIERDA: %s'
               '\tDERECHA: %s'
@@ -703,23 +712,46 @@ def a_estrella(matriz, rango_vision, cant_zanahorias):
 if __name__ == '__main__':
 
     test_matrix = np.matrix([
-        [' ', ' ', ' ', ' ', 'C', ' ', 'Z'],
-        [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
-        [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', 'Z', ' ', 'Z'],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        ['Z', ' ', ' ', 'Z', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', 'Z', ' ', ' ', ' ', 'Z'],
-        [' ', 'Z', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', 'Z', ' ', ' ', 'Z', ' '],
-        [' ', ' ', 'Z', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', 'Z'],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        ['Z', ' ', ' ', 'Z', ' ', ' ', 'Z'],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', 'Z', ' ', ' ', 'Z', ' ', ' ']
+        [' ', ' ', ' ', ' ', 'C', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Z', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
     ])
 
-    a_estrella(test_matrix, 2, 10)
+    a_estrella(test_matrix, 10, 9)
+
+
+#  ----------------------------------------------------------------------------
+
+def generar_pruebas(matriz):
+    prueba = 1
+
+    for rango_vision in range(5, 25, 2):
+        test_matrix_aux = matriz.copy()
+        print('#Prueba: ', prueba, '\tRango Vision: ', rango_vision, '\tCantidad Zanahorias: 5\tCosto Acmulado: \t', a_estrella(test_matrix_aux, rango_vision, 5))
+        prueba += 1
+        test_matrix_aux = matriz.copy()
+        print('#Prueba: ', prueba, '\tRango Vision: ', rango_vision, '\tCantidad Zanahorias: 10\tCosto Acmulado: \t', a_estrella(test_matrix_aux, rango_vision, 10))
+        prueba += 1

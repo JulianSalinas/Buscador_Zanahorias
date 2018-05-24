@@ -298,6 +298,11 @@ implementadas en la función.
                                                direccion_vieja)
     
     **NOTA:** El costo agregado para esta penalización es de **10**.
+
+En resumen, la función del heurístico podría resumirse en:
+    
+    h(n) =  castigar_distancia(n) + castigar_emisferios(n) + castigar_esp_desconocido(n) + castigar_direccion_padre(n)
+
     
 #### _Análisis de resultados_
 
