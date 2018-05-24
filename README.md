@@ -298,8 +298,55 @@ implementadas en la función.
                                                direccion_vieja)
     
     **NOTA:** El costo agregado para esta penalización es de **10**.
+
+En resumen, la función del heurístico podría resumirse en:
+    
+    h(n) =  castigar_distancia(n) + castigar_emisferios(n) + castigar_esp_desconocido(n) + castigar_direccion_padre(n)
+
     
 #### _Análisis de resultados_
+Para el análisis de resultados, se decide mostrar la ejecución de dos tableros de dimensión 25x25 y 10 zanahorias,
+el cual se utiliza en 20 pruebas con diferentes rangos de visión y cantidad de zanahorias
+que ocupa el conejo para darse por satisfecho.
+
+A continuación, se muestran dichos tableros y el comportamiento que tienen en función de la cantidad de pasos 
+que tuvo que dar el conejo para alcanzar la meta:
+
+__Prueba Número 1__
+
+- Tablero utilizado
+
+![prueba1](/imgs/a_estrella/tablero_pruebas.PNG "Tablero 1")
+
+- Resumen de datos
+
+![tabla1](/imgs/a_estrella/tabla1.PNG "Tabla de prueba 1")
+
+- Gráfico de comportamiento
+
+    Tal como se puede apreciar en el siguiente gráfico, el comportamiento en función de costo disminuye
+conforme el rango de visión aumenta y también cuando la cantidad de zanahorias para darse por satisfecho disminuyen.
+ 
+![graf1](/imgs/a_estrella/graf1.PNG "Gráfico de prueba 1")
+
+
+__Prueba Número 2__
+
+- Tablero utilizado
+
+![prueba2](/imgs/a_estrella/tablero_pruebas2.PNG "Tablero 2")
+
+- Resumen de datos
+
+![tabla2](/imgs/a_estrella/tabla2.PNG "Tabla de prueba 2")
+
+- Gráfico de comportamiento
+
+    En esta segunda prueba, se utiliza un tablero 'más sencillo', donde se obtiene un comportamiento muy similar,
+donde la función de costo disminuye conforme el rango de visión aumenta y también cuando la
+cantidad de zanahorias para darse por satisfecho disminuyen.
+
+![graf2](/imgs/a_estrella/graf2.PNG "Gráfico de prueba 2") 
 
 
 ### Algoritmos Genéticos
