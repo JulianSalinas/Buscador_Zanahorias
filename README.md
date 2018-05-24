@@ -1,14 +1,13 @@
 # Buscador_Zanahorias
 
 
-
-###### Proyecto Corto II: Inteligencia Artificial
+## Proyecto Corto II: Inteligencia Artificial
 
 El propósito es aplicar dos tipos de algoritmos de búsqueda a un determinado problema. Para simplificar la explicación del mismo, se abstrae mediante el uso de un conejo que debe encontrar una cantidad determinada de zanahorias dentro del huerto. 
 
 
 
-###### Terminología 
+### Terminología 
 
 1. Huerto: Matriz de `n x m `Parcela: Posición `(i, j)` de la matriz.
 
@@ -26,13 +25,13 @@ El segundo se trata de un algoritmo `genético`. En este se limita al conejo a m
 
 
 
-#### Instalación 
+### Instalación 
 
 ________________
 
 
 
-##### Dependencias 
+#### Dependencias 
 
 Es necesario contar con `Python 3`  para poder realizar la instalación. Además, se requieren algunas dependecias que se pueden instalar utilizando `pip`: 
 
@@ -45,7 +44,7 @@ Es necesario contar con `Python 3`  para poder realizar la instalación. Además
 
 
 
-##### Instalación desde el código fuente 
+#### Instalación desde el código fuente 
 
 1. Se debe abrir una terminal con permisos de administrador  
 
@@ -57,7 +56,7 @@ Es necesario contar con `Python 3`  para poder realizar la instalación. Además
 
 
 
-##### Instalación utilizando pip install 
+#### Instalación utilizando pip install 
 
 1. Se debe abrir una terminal con permiso de administrador 
 
@@ -67,13 +66,13 @@ Es necesario contar con `Python 3`  para poder realizar la instalación. Además
 
 
 
-#### Manual de uso 
+### Manual de uso 
 
 _____
 
 
 
-##### Ejecución desde consola 
+#### Ejecución desde consola 
 
 Una vez instalado se pueden utilizar el algoritmo `A*` de la siguiente forma: 
 
@@ -87,42 +86,42 @@ El algoritmo `genético` se utiliza mediante el comando
 
 
 
-##### Parámetros
+#### Parámetros
 
 
 
-###### --a-estrella
+##### --a-estrella
 Indica que se desea ejecutar el algoritmo `A*`. 
 
 
 
-###### --genetico
+##### --genetico
 Indica que se desea ejecutar el algoritmo `genético`.
 
 
 
-###### --vision
+##### --vision
 Indica la cantidad de parcelas que el conejo puede observar desde su posición.  Este solo aplica para el algoritmo `A*`.
 
 
 
-###### --zanahorias
+##### --zanahorias
 Indica la cantidad de zanahorias que el conejo debe encontrar para terminar la ejecución del algoritmo `A*`.
 
 
 
-###### --derecha, --izquierda, --arriba o --abajo:
+##### --derecha, --izquierda, --arriba o --abajo:
 Indica hacia que lado tiene que avanzar el conejo inicialmente. Se debe indicar solo para el algoritmo `genético` .
 
 
 
-###### --individuos
+##### --individuos
 
 Cantidad de genes o individuos que el algoritmo `genético` debe mantener enn cada generación. 
 
 
 
-###### --tablero- inicial
+##### --tablero- inicial
 
 Nombre del archivo de texto que contiene el tablero inicial. Este archivo debe tener el siguiente una forma similar a la siguiente: 
 
@@ -145,31 +144,214 @@ Nombre del archivo de texto que contiene el tablero inicial. Este archivo debe t
 
 
 
-##### Importar en un archivo  
+#### Importar en un archivo  
 
 Para utilizar el módulo instalado se puede importar de la siguiente forma desde cualquier archivo `.py` o desde el shell de `Python`:
 
 > from tec.ic.ia.pc2.g03 import carrot_finder
 
-
-
-#### Acerca de 
+### Algoritmo de A* 
 
 ________________
 
-Integrantes del proyecto:
-
-| Nombre                    | Carné      |
-| ------------------------- | ---------- |
-| Brandon Dinarte Chavarría | 2015088894 |
-| Armando López Cordero     | 2015125414 |
-| Julian Salinas Rojas      | 2015114132 |
-
-Estudiantes de Ingeniería en Computación del Instituto Tecnológico de Costa Rica.
+El objetivo principal fue desarrollar un algoritmo de búsqueda que se basa en la técnica de A*, en un ambiente donde se cuenta con un tablero de juego, un conejo como punto de partida y una serie de zanahorias que cumpliran la función de metas u objetivos dentro del algoritmo a desarrollar.
 
 
-________________
+#### _Flujo de implementación_
+En esta sección, se pretende mostrar una pequeña lista de pasos que se llevaron a cabo durante el desarrollo del proyecto, con la finalidad de tener una idea más clara del comportamiento del algoritmo implementado.
+
+1. En primera instancia, se debe tener claro que el algoritmo necesita tanto de un tablero de juego, donde se encuentran ubicadas las zanahorias y el conejo. También un parámetro que indique cuántas zanahorias son necesarias para que el conejo se de por satisfecho y además, un número indicando el rango de visión que tiene el conejo a su alrededor.
+
+2. Una vez que dichos parámetros son ingresados, el algoritmo entra en un ciclo (while) el cual mantiene en ejecución la función principal hasta que el conejo logre comerse todas las zanahorias que son necesarias. En contraparte, si el conejo no lograse encontrarlas, el sistema deberá abortarse por medio de la combinación de teclas _<ctrl+c>._
+
+3. Respecto al funcionamiento de la función principal, el mismo se encarga de contabilizar los pasos que ha dado el conejo hasta cierto punto, además de calcular los sucesores y sus respectivos costos para una posición [X, Y] donde se encuentre el conejo.
+
+4. Una vez que se realiza el cálculo de la función de costo para cada posible sucesor, el algoritmo se encarga de elegir el de menor costo, desplazando el conejo hacia la dirección que represente dicho sucesor, verificando si se llegó a una meta y de ser así, se disminuyen las zanahorias faltantes (para que el conejo se de por satisfecho).   
+
+#### _Detalle de la función de costo f(n)_
+Respecto a esta función, se debe tener claro que la misma está condicionada por un costo acumulado **g(n)** y un heurístico **h(n)** que indica el costo de una cierta posición hacia la meta.
+
+Entonces, la función de costo para desplazar el conejo a una posición determinada, está dada por:
+
+    f(n) = g(n) + h(n)
+
+ 
+##### _Costo acumulado_
+Tal como se menciona en el instructivo del proyecto, el acumulado hasta un punto específico en la ejecución del algoritmo será simplemente la cantidad de pasos que ha dado el conejo.
+Dejando así que dicho costo sea simplente un contador de "pasos actuales", y por ende no se diseña ninguna función para representarle.
+
+La fórmula de este costo estaría dada por:
+    
+    g(n) = Cantidad de Pasos Actuales
+   
+##### _Costo del heurístico_
+
+###### _Consideraciones del Instructivo_
+Primero que todo, antes de abarcar el diseño del heurístico, se considera importante considerar
+las siguientes instrucciones dadas en el instructivo del proyecto y que tienen un impacto importante 
+en el diseño del heurístico:
+
+* El ambiente no es completamente observable.
+* El conejo tendrá un rango de visión.
+* El diseño del heurístico no debe incluir "memoria" que haga el ambiente implícitamente
+observable.
+* Se indicará al inicio del programa cuántas zanahorias en total debe buscar el conejo
+para terminar su labor, y así darse por satisfecho después de comerse esa cantidad. 
+
+###### _Diseño de la función_
+Una vez que se tienen claras las consideraciones del instructivo, se puede proceder con el diseño del heurístico.
+Mismo que se diseña en conjunto con el grupo de trabajo, donde se concluyen las siguientes consideraciones que fueron 
+implementadas en la función.
+
+1. Aplicación de un costo según la distancia lineal a las zanahorias
+
+    En este caso, el costo que se le aplica a un sucesor es básicamente la distancia más corta hacia
+    una zanahoria que se encuentre dentro de su rango de visión. A continuación se muestra el llamado a la función
+    que se encuentra en el código para el cálculo del heurístico.  
+ 
+        costo_sucesores = castigar_distancia(sucesores, zanahorias, pasos_actuales)
+    
+    Para poner un ejemplo de este cálculo se presenta la siguiente imagen:
+    
+    ![tablero2](/imgs/a_estrella/tablero2.PNG "Tablero para calcular distancia lineal")
+    
+    Entonces como se puede ver, el conejo podría desplazarse a cuatro posibles direcciones, que serían las
+    que están de color azúl.
+    
+        Izquierda,  en la posición [6, 0]
+        Derecha,    en la posición [6, 2]
+        Arriba,     en la posición [5, 1]
+        Abajo,      en la posición [7, 1]
+    
+    Luego, para cada una de estas se determina la zanahoria más cercana y se calcúla la distancia.
+    Nótese que las zanahorias más cercanas para cada dirección, se encuentran señaladas por una flecha.
+    
+    Por último, el cálculo de la distancia que representa el costo que se le va agregar a cada dirección se muestra a continuación:
+        
+        Izquierda [6, 0]-> Zanahoria [10, 0]  -> Costo = 4 
+        Derecha [6, 2]  -> Zanahoria [3, 4]   -> Costo = 5
+        Arriba [5, 1]   -> Zanahoria [3, 4]   -> Costo = 5
+        Abajo [7, 1]    -> Zanahoria [10, 0]  -> Costo = 4
+
+2. Aplicación de un costo según la región que tenga más zanahorias
+    
+    En este caso, el costo que se le aplica a un sucesor es básicamente si 
+    su dirección cuenta con menos zanahorias que la dirección opuesta.
+    Es decir, que solamente se aplicará un costo a dos direcciones (Izquierda/Derecha y Arriba/Abajo).
+    
+    Además, se debe tener claro que este costo solamente se tomará en cuenta si el numero de
+    zanahorias agrupadas cumplen con la cantidad que el conejo ocupa comerse para darse por satisfecho.
+    Esto último se decidió, debido a que la búsqueda no era tan efectiva si se le daba prioridad a la región con más
+    zanahorias.  
+     
+    A continuación se muestra el llamado a la función
+    que se encuentra en el código para el cálculo del heurístico.
+          
+        costo_sucesores = castigar_emisferios(matriz_visible, costo_sucesores,
+                                          pos_actual, cant_zanahorias)
+    
+    Para tener claro un ejemplo del cálculo, se debe contemplar cómo se está realizando la comparación
+    entre dos regiones. Esto se logra por medio de un split de la matriz, según la posición que ocupa el conejo.
+    
+    Entonces para penalizar la dirección Izquierda o Derecha se hace un split vertical, tal
+    como se muestra en la siguiente imagen. 
+    
+    ![tablero5](/imgs/a_estrella/tablero5.PNG "Tablero vertical")
+    
+    Luego, para penalizar la dirección Arriba o Abajo se hace un split horizontal, tal
+    como se muestra en la siguiente imagen. 
+    
+    ![tablero4](/imgs/a_estrella/tablero4.PNG "Tablero horizontal")
+    
+    Finalmente, para cada uno de estos se calcula cuál región tiene más zanahorias,
+    y se castiga la dirección opuesta.
+    
+    **NOTA:** El costo agregado a la dirección con menos zanahorias es de **3**. 
+
+3. Aplicación de un costo si el sucesor va a un espacio desconocido
+    
+    Este costo es agregado al sucesor que se dirija hacia una posición fuera del tablero 
+    de juego. 
+    
+    A continuación se muestra el llamado a la función
+    que se encuentra en el código para el cálculo del heurístico.
+    
+        costo_sucesores = castigar_esp_desconocido(costo_sucesores, forma_matriz)
+    
+    Un ejemplo de esto es el costo que se le agrega a la dirección 'Abajo', en el caso 
+    de la siguiente imagen:
+    
+    ![tablero4](/imgs/a_estrella/tablero6.PNG "Tablero espacio desconocido")
+    
+    **NOTA:** El costo agregado para esta penalización es de **100**.
+    
+4. Aplicación de un costo a la dirección del padre, si en la misma no existía zanahoria
+    
+    Este costo es agregado a la dirección de la que provenía el conejo si en esta no existía una zanahoria.
+    Lo que se pretende, es evitar que el conejo quiera devolverse a una posicion ya explorada, donde no existía
+    ninguna meta.
+    
+    A continuación se muestra el llamado a la función
+    que se encuentra en el código para el cálculo del heurístico.
+    
+        costo_sucesores = castigar_direccion_padre(costo_sucesores,
+                                               direccion_vieja)
+    
+    **NOTA:** El costo agregado para esta penalización es de **10**.
+
+En resumen, la función del heurístico podría resumirse en:
+    
+    h(n) =  castigar_distancia(n) + castigar_emisferios(n) + castigar_esp_desconocido(n) + castigar_direccion_padre(n)
+
+    
+#### _Análisis de resultados_
+Para el análisis de resultados, se decide mostrar la ejecución de dos tableros de dimensión 25x25 y 10 zanahorias,
+el cual se utiliza en 20 pruebas con diferentes rangos de visión y cantidad de zanahorias
+que ocupa el conejo para darse por satisfecho.
+
+A continuación, se muestran dichos tableros y el comportamiento que tienen en función de la cantidad de pasos 
+que tuvo que dar el conejo para alcanzar la meta:
+
+__Prueba Número 1__
+
+- Tablero utilizado
+
+![prueba1](/imgs/a_estrella/tablero_pruebas.PNG "Tablero 1")
+
+- Resumen de datos
+
+![tabla1](/imgs/a_estrella/tabla1.PNG "Tabla de prueba 1")
+
+- Gráfico de comportamiento
+
+    Tal como se puede apreciar en el siguiente gráfico, el comportamiento en función de costo disminuye
+conforme el rango de visión aumenta y también cuando la cantidad de zanahorias para darse por satisfecho disminuyen.
+ 
+![graf1](/imgs/a_estrella/graf1.PNG "Gráfico de prueba 1")
+
+
+__Prueba Número 2__
+
+- Tablero utilizado
+
+![prueba2](/imgs/a_estrella/tablero_pruebas2.PNG "Tablero 2")
+
+- Resumen de datos
+
+![tabla2](/imgs/a_estrella/tabla2.PNG "Tabla de prueba 2")
+
+- Gráfico de comportamiento
+
+    En esta segunda prueba, se utiliza un tablero 'más sencillo', donde se obtiene un comportamiento muy similar,
+donde la función de costo disminuye conforme el rango de visión aumenta y también cuando la
+cantidad de zanahorias para darse por satisfecho disminuyen.
+
+![graf2](/imgs/a_estrella/graf2.PNG "Gráfico de prueba 2") 
+
+
 ### Algoritmos Genéticos
+
+________________
 
 El objetivo principal fue desarrollar un algoritmo genético que optimice la colocación de señales direccionales para que el conejo recorra el tablero.
 
@@ -316,6 +498,7 @@ Imagen recuperada de: https://upload.wikimedia.org/wikipedia/commons/d/dd/Comput
 
 2. **Cruce por corte en dos puntos**. Cada arreglo padre se divide en tres, los dos puntos de división son los mismos para ambos, y se determinan mediantes dos números aleatorios sobre las posibles casillas. Luego se intercambian la parte central de un padre con su correspondiente parte del otro padre.
 
+<<<<<<< HEAD
 ![cruce2puntos](https://upload.wikimedia.org/wikipedia/commons/4/47/Computational.science.Genetic.algorithm.Crossover.Two.Point.svg "Cruce con corte en dos puntos")
 Imagen recuperada de: https://upload.wikimedia.org/wikipedia/commons/4/47/Computational.science.Genetic.algorithm.Crossover.Two.Point.svg
 
@@ -407,3 +590,22 @@ Para todas las ejecuciones se utilizaron los mismos parámetros, a excepción de
 1. Las pruebas realizadas muestran puntajes relativamente similares, por lo que resulta útil para la comparación entre el número de generación donde se origina el resultado.
 2. El corte en 1 punto dio la solución final en generaciones muy bajas, osea pocas iteraciones, en 3 ocasiones. Las 3 ocasiones están por debajo de la generación 50. Mientras que la única vez que el cruce en 2 puntos dio una solución en una generación menor a 100, apenas logró darla en la 76. Viendo esto, parece que la política de cruce con corte en 1 punto parece alcanzar la solución en pocas generaciones con mayor frecuencia.
 3. Hay que destacar que el corte en un punto generó puntajes de aptitud menores a 4000 en 3 ocasiones, aunque claramente cercanos, esto puede deberse al peso relacionado a conseguir la primer zanahoria más cercana, por lo que podría decirse que el cruce en dos puntos tiende a conseguir la mejor primer zanahoria con más frecuencia, lo cual mejora el puntaje de la solución.
+=======
+##### Resultados según política de cruce
+
+
+
+### Acerca de 
+
+________________
+
+Integrantes del proyecto:
+
+| Nombre                    | Carné      |
+| ------------------------- | ---------- |
+| Brandon Dinarte Chavarría | 2015088894 |
+| Armando López Cordero     | 2015125414 |
+| Julian Salinas Rojas      | 2015114132 |
+
+Estudiantes de Ingeniería en Computación del Instituto Tecnológico de Costa Rica.
+>>>>>>> 70fb11b14a94ab6b0b56e029b9557973d97d9625
