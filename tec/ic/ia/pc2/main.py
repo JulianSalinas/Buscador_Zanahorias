@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
 
 import argparse
-from tec.ic.ia.pc2.model.file_utils import *
+from tec.ic.ia.pc2.g03 import run
 
 # -----------------------------------------------------------------------------
 
@@ -24,6 +24,9 @@ def get_arguments():
     parser.add_argument('--generaciones', nargs=1, type=int)
     parser.add_argument('--tablero-inicial', nargs=1, type=str)
     parser.add_argument('--semilla', nargs=1, type=int)
+    parser.add_argument('--politica', nargs=1, type=int)
+    parser.add_argument('--mutaciones', nargs=1, type=int)
+    parser.add_argument('--semilla', nargs=1, type=int)
 
     return parser.parse_args()
 
@@ -32,18 +35,10 @@ def get_arguments():
 
 
 if __name__ == '__main__':
-
     print("ARGS: ")
     args = get_arguments()
-
-    if args.tablero_inicial is None:
-        filename = get_default_filename()
-    else:
-        filename = args.tablero_inicial[0]
-
-    matrix = read_file(filename)
-
-    print(matrix)
+    print(args)
+    run(args)
 
 # -----------------------------------------------------------------------------
 
