@@ -28,7 +28,6 @@ def get_arguments():
     parser.add_argument('--semilla', nargs=1, type=int, default=[10])
     parser.add_argument('--politica', nargs=1, type=int, default=[1])
     parser.add_argument('--mutaciones', nargs=1, type=int, default=[5])
-
     return parser.parse_args()
 
 
@@ -36,6 +35,18 @@ def get_arguments():
 
 
 if __name__ == '__main__':
+
+    args = get_arguments()
+
+    if not (args.a_estrella or args.genetico):
+        print("Debe específicar --a-estrella o --genetico")
+
+    elif args.genetico:
+
+        if not (args.derecha or args.izquierda or args.arriba or args.abajo):
+            print("Debe indicar la posición actual "
+                  "--derecha, --izquierda, --arriba o --abajo")
+
     run(get_arguments())
 
 # -----------------------------------------------------------------------------
