@@ -12,21 +12,22 @@ def get_arguments():
 
     parser.add_argument('--genetico', action='store_true')
     parser.add_argument('--a-estrella', action='store_true')
+    parser.add_argument('--tablero-inicial', nargs=1, type=str)
 
+    # Para --a-estrella
+    parser.add_argument('--vision', nargs=1, type=int, default=[3])
+    parser.add_argument('--zanahoria', nargs=1, type=int, default=[2])
+
+    # Para --genetico
     parser.add_argument('--abajo', action='store_true')
     parser.add_argument('--arriba', action='store_true')
     parser.add_argument('--derecha', action='store_true')
     parser.add_argument('--izquierda', action='store_true')
-
-    parser.add_argument('--vision', nargs=1, type=int)
-    parser.add_argument('--zanahoria', nargs=1, type=int)
-    parser.add_argument('--individuos', nargs=1, type=int)
-    parser.add_argument('--generaciones', nargs=1, type=int)
-    parser.add_argument('--tablero-inicial', nargs=1, type=str)
-    parser.add_argument('--semilla', nargs=1, type=int)
-    parser.add_argument('--politica', nargs=1, type=int)
-    parser.add_argument('--mutaciones', nargs=1, type=int)
-    parser.add_argument('--semilla', nargs=1, type=int)
+    parser.add_argument('--individuos', nargs=1, type=int, default=[15])
+    parser.add_argument('--generaciones', nargs=1, type=int, default=[100])
+    parser.add_argument('--semilla', nargs=1, type=int, default=[10])
+    parser.add_argument('--politica', nargs=1, type=int, default=[1])
+    parser.add_argument('--mutaciones', nargs=1, type=int, default=[5])
 
     return parser.parse_args()
 
@@ -35,10 +36,7 @@ def get_arguments():
 
 
 if __name__ == '__main__':
-    print("ARGS: ")
-    args = get_arguments()
-    print(args)
-    run(args)
+    run(get_arguments())
 
 # -----------------------------------------------------------------------------
 
