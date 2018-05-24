@@ -72,11 +72,15 @@ _____
 
 Una vez instalado se pueden utilizar el algoritmo `A*` de la siguiente forma: 
 
-> python main.py  ­­--­­a­-estrella --tablero-­inicial entrada.txt ­­--vision n --­­zanahorias n
+> python3 main.py  ­­--­­a­-estrella --vision n --­­zanahoria n --tablero-­inicial entrada.txt ­­
+>
+> ejemplo$ python 3 main.py main.py  ­­--­­a­-estrella --vision 4 --­­zanahoria 2 --tablero-­inicial entrada.txt
 
 El algoritmo `genético` se utiliza mediante el comando
 
-> python main.py --­­genetico --­­tablero-­inicial entrada.txt ­­--derecha ­­--individuos n
+> python main.py --­­genetico  --individuos n --generaciones n --zanahoria n --politica 1 --mutaciones n ­­--derecha ­­--­­tablero-­inicial entrada.txt
+>
+> ejemplo$ python main.py --­­genetico  --individuos 20 --generaciones 50 --zanahoria 2 --politica 1 --mutaciones 10 ­­--derecha ­­--­­tablero-­inicial /home/usuario/Desktop/entrada.txt
 
 
 
@@ -94,15 +98,7 @@ El algoritmo `genético` se utiliza mediante el comando
 10. **--semilla**: Si se desea obtener los mismos resultados al usar los mismos parámetros, se debe usar una misma semilla para las distintas corridas. 
 11. **--tablero- inicial**:
 
-Nombre del archivo de texto que contiene el tablero inicial. Este archivo debe tener el siguiente una forma similar a la siguiente: 
-
-| <blanco> | <blanco> | <blanco> | <linea> |
-| -------- | -------- | -------- | ------- |
-| C        | <blanco> | Z        | <linea> |
-| <blanco> | Z        | <blanco> | <linea> |
-| <blanco> | <blanco> | Z        | <linea> |
-
-
+Nombre del archivo de texto que contiene el tablero inicial. 
 
 1. `C` en mayúscula, identifica la posición del conejo. Sólo podrá haber uno por tablero. 
 2. `Z` en mayúscula, identifica la posición de una zanahoria. Puede haber múltiples zanahorias.
@@ -149,6 +145,8 @@ Entonces, la función de costo para desplazar el conejo a una posición determin
     f(n) = g(n) + h(n)
 
  
+
+
 
 ##### _Costo acumulado_
 Tal como se menciona en el instructivo del proyecto, el acumulado hasta un punto específico en la ejecución del algoritmo será simplemente la cantidad de pasos que ha dado el conejo.
