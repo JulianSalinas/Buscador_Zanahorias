@@ -316,6 +316,10 @@ __Prueba Número 1__
 
 - Tablero utilizado
 
+![prueba1](/imgs/a_estrella/tablero_pruebas.PNG "Tablero 1")
+
+- Resumen de datos
+
 ![tabla1](/imgs/a_estrella/tabla1.PNG "Tabla de prueba 1")
 
 - Gráfico de comportamiento
@@ -329,6 +333,10 @@ conforme el rango de visión aumenta y también cuando la cantidad de zanahorias
 __Prueba Número 2__
 
 - Tablero utilizado
+
+![prueba2](/imgs/a_estrella/tablero_pruebas2.PNG "Tablero 2")
+
+- Resumen de datos
 
 ![tabla2](/imgs/a_estrella/tabla2.PNG "Tabla de prueba 2")
 
