@@ -1,5 +1,5 @@
 
-from model.genetic_algorithms import *
+from tec.ic.ia.pc2.model.genetic_algorithms import *
 
 """
     Este archivo no es utilizado durante la ejecución normal de cualquiera 

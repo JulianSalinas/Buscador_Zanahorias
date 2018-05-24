@@ -7,8 +7,7 @@ import pandas as pd
 
 
 def get_default_folder():
-    folder = os.path.split(__file__)[0]
-    folder = os.path.split(folder)[0]
+    folder = os.path.expanduser("~/Desktop")
     folder = os.path.abspath(folder)
     return os.path.join(folder, 'files')
 
@@ -16,7 +15,9 @@ def get_default_folder():
 
 
 def get_default_filename():
-    folder = get_default_folder()
+    folder = os.path.split(__file__)[0]
+    folder = os.path.split(folder)[0]
+    folder = os.path.join(folder, 'files')
     return os.path.join(folder, "testing_file.txt")
 
 # -----------------------------------------------------------------------------
