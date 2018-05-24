@@ -498,7 +498,6 @@ Imagen recuperada de: https://upload.wikimedia.org/wikipedia/commons/d/dd/Comput
 
 2. **Cruce por corte en dos puntos**. Cada arreglo padre se divide en tres, los dos puntos de división son los mismos para ambos, y se determinan mediantes dos números aleatorios sobre las posibles casillas. Luego se intercambian la parte central de un padre con su correspondiente parte del otro padre.
 
-<<<<<<< HEAD
 ![cruce2puntos](https://upload.wikimedia.org/wikipedia/commons/4/47/Computational.science.Genetic.algorithm.Crossover.Two.Point.svg "Cruce con corte en dos puntos")
 Imagen recuperada de: https://upload.wikimedia.org/wikipedia/commons/4/47/Computational.science.Genetic.algorithm.Crossover.Two.Point.svg
 
@@ -590,10 +589,6 @@ Para todas las ejecuciones se utilizaron los mismos parámetros, a excepción de
 1. Las pruebas realizadas muestran puntajes relativamente similares, por lo que resulta útil para la comparación entre el número de generación donde se origina el resultado.
 2. El corte en 1 punto dio la solución final en generaciones muy bajas, osea pocas iteraciones, en 3 ocasiones. Las 3 ocasiones están por debajo de la generación 50. Mientras que la única vez que el cruce en 2 puntos dio una solución en una generación menor a 100, apenas logró darla en la 76. Viendo esto, parece que la política de cruce con corte en 1 punto parece alcanzar la solución en pocas generaciones con mayor frecuencia.
 3. Hay que destacar que el corte en un punto generó puntajes de aptitud menores a 4000 en 3 ocasiones, aunque claramente cercanos, esto puede deberse al peso relacionado a conseguir la primer zanahoria más cercana, por lo que podría decirse que el cruce en dos puntos tiende a conseguir la mejor primer zanahoria con más frecuencia, lo cual mejora el puntaje de la solución.
-=======
-##### Resultados según política de cruce
-
-
 
 ### Acerca de 
 
