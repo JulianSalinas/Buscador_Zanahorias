@@ -33,7 +33,7 @@ def save_file(filename, data):
 
 def read_file(filename):
     filename = fix_filename(filename)
-    return pd.read_csv(open(filename, "r")).values
+    return pd.read_csv(open(filename, "r"), header=None, sep=',').values
 
 
 # -----------------------------------------------------------------------------

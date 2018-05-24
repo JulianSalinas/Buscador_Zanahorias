@@ -1,7 +1,5 @@
 # -----------------------------------------------------------------------------
 
-import os
-import sys
 import numpy as np 
 from tec.ic.ia.pc2.model.file_utils import *
 from tec.ic.ia.pc2.model.a_estrella import a_estrella
@@ -37,7 +35,7 @@ def run(args):
                                  args.individuos[0],
                                  args.generaciones[0],
                                  args.mutaciones[0],
-                                 np.matrix(initial_board),
+                                 np.matrix(initial_board, dtype=object),
                                  args.politica[0],
                                  args.semilla[0])
 
