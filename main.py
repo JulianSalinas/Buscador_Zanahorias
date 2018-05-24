@@ -1,5 +1,6 @@
 # -----------------------------------------------------------------------------
 
+import sys
 import argparse
 from tec.ic.ia.pc2.g03 import run
 
@@ -40,12 +41,14 @@ if __name__ == '__main__':
 
     if not (args.a_estrella or args.genetico):
         print("Debe específicar --a-estrella o --genetico")
+        sys.exit(0)
 
     elif args.genetico:
 
         if not (args.derecha or args.izquierda or args.arriba or args.abajo):
             print("Debe indicar la posición actual "
                   "--derecha, --izquierda, --arriba o --abajo")
+            sys.exit(0)
 
     run(get_arguments())
 
