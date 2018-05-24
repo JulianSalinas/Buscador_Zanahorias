@@ -1,6 +1,6 @@
 
 from unittest import TestCase
-from model.a_estrella import *
+from tec.ic.ia.pc2.model.a_estrella import *
 
 
 # -----------------------------------------------------------------------------

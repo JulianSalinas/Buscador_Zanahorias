@@ -1,11 +1,6 @@
 
-import numpy as np
-
-from random import seed
-from time import time
 from unittest import TestCase
-
-from model.genetic_algorithms import *
+from tec.ic.ia.pc2.model.genetic_algorithms import *
 
 
 class TestGeneticAlgorithms(TestCase):
