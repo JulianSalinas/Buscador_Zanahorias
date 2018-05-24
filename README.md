@@ -2,6 +2,10 @@
 
 
 
+Link del repositorio: https://github.com/JulianSalinas/Buscador_Zanahorias
+
+
+
 ## Proyecto Corto II: Inteligencia Artificial
 
 El propósito es aplicar dos tipos de algoritmos de búsqueda a un determinado problema. Para simplificar la explicación del mismo, se abstrae mediante el uso de un conejo que debe encontrar una cantidad determinada de zanahorias dentro del huerto. 
@@ -145,6 +149,7 @@ Entonces, la función de costo para desplazar el conejo a una posición determin
     f(n) = g(n) + h(n)
 
  
+
 
 
 
